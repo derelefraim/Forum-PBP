@@ -10,6 +10,7 @@ interface Posts {
   user_id: number;
   created_at: string;
   updated_at: string;
+  likes : string;
   username: string;
 }
 
@@ -36,6 +37,8 @@ const Home: React.FC = () => {
           </div>
           <div className='footer'> {post.created_at} </div>
           <div className='footer'> {post.updated_at} </div>
+          <div className='footer'> Likes  : {post.likes} </div>
+          
           
         </div>
       ))}

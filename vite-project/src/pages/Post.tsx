@@ -12,6 +12,7 @@ const Post: React.FC = () => {
     created_at: string;
     updated_at: string;
     username: string;
+    likes: string;
   }
 
   const [post, setPost] = useState<PostObject | null>(null);
@@ -34,6 +35,7 @@ const Post: React.FC = () => {
               <div className="footer">Posted By : {post.username}</div>
               <div className="footer"> {post.created_at} </div>
               <div className="footer"> {post.updated_at} </div>
+              <div className="footer"> Likes : {post.likes} </div>
             </>
           )}
         </div>

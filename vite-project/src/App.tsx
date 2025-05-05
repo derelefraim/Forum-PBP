@@ -3,6 +3,8 @@ import Home from "./pages/Home.tsx";
 import { Route, Routes } from "react-router";
 import CreatePostPage from "./pages/CreatePostPage.tsx";
 import Post from "./pages/Post.tsx";
+
+
 function App() {
   return(
   <div className="min-h-screen bg-black text-gray-100 transition-opacity duration-700 pt-20">
