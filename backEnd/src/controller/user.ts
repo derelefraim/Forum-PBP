@@ -23,7 +23,7 @@ export const login = async (req: any, res: any) => {
         }
 
         const token = generateToken(user.user_id)
-        res.status(500).json({ message: "berhasil login", token });
+        res.status(200).json({ message: "berhasil login", token });
         return;
     } catch (error) {
         res.status(500).json({ message: "Terjadi kesalahan", error });
