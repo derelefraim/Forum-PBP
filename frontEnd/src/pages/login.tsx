@@ -55,9 +55,9 @@ const LoginPage: React.FC = () => {
           
         </form>
         <p>
-          Don't have an account? <a href="/register">Register</a>
+          Don't have an account? <a onClick={() => navigate("/Register")}>Register</a>
         </p>
-        <button onClick={() => navigate("/register")}>Back to Home</button>
+        <button onClick={() => navigate("Home")}>Back to Home</button>
       </div>
     </div>
   );
