@@ -1,7 +1,44 @@
 import { Link } from "react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { fetchFromAPI } from "../../../backend/src/api/api.ts";
+import { useNavigate } from "react-router-dom";
+
 export const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState(""); // Tambahkan state username
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchFromAPI("/user/getUserById", "GET");
+        setUsername(data.user.username); // Simpan username ke state
+        console.log("Profile data:", data);
+      } catch (err) {
+        console.error("Error fetching profile:", err);
+        setError("Gagal mengambil data profile.");
+      }
+    };
+
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsLoggedIn(true);
+      fetchData();
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, []);
+
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (token) {
+  //     setIsLoggedIn(true);
+  //   } else {
+  //     setIsLoggedIn(false);
+  //   }
+  // }, []);
 
   return (
     <nav className="fixed top-0 w-full z-40 bg-[rgba(10,10,10,0.8)] backdrop-blur-lg border-b border-white/10 shadow-lg">
@@ -55,7 +92,9 @@ export const Navbar = () => {
 
             {/* Desktop Auth */}
             <div>
-                <button>  </button>
+                  <div onClick={() => navigate("/profile")}>
+                  {isLoggedIn ? <p>Selamat datang, {username}</p> : <button>Login</button>}
+                </div>
             </div>
 
 
@@ -82,3 +121,7 @@ export const Navbar = () => {
     </nav>
   );
 };
+
+
+
+

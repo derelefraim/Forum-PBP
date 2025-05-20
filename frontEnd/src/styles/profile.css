@@ -1,0 +1,63 @@
+.profile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.profile-card {
+  background: #232326;
+  padding: 36px 48px;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.28);
+  min-width: 340px;
+}
+
+.profile-title {
+  color: #fff;
+  margin-bottom: 18px;
+  size: 100;
+}
+
+.profile-error {
+  color: #ff6b6b;
+}
+
+.profile-info {
+  color: #eaeaea;
+  font-size: 1.1rem;
+}
+
+.profile-loading {
+  color: #bdbdbd;
+}
+
+.profile-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.profile-btn-back {
+  background: #35353b;
+  color: #eaeaea;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.profile-btn-edit {
+  background: #4a90e2;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.profile-info{
+    margin-bottom: 16px;
+}

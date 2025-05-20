@@ -63,9 +63,9 @@ export const getAllUser = async (req: any, res: any) => {
 
 // -- GET User by ID
 export const getUserById = async (req: any, res: any) => {
-    const userId = req.params.userId; // Ambil user_id dari parameter URL
+    const userId = req.body.userId; // Ambil dari hasil decode JWT
     try {
-        const user = await User.findOne({ where: { userId } });
+        const user = await User.findOne({ where: { user_id: userId } });
         if (!user) {
             res.status(404).json({ message: "User tidak ditemukan" });
             return;
@@ -78,24 +78,26 @@ export const getUserById = async (req: any, res: any) => {
 
 // -- Update user
 export const updateUser = async (req: any, res: any) => {
-    const userId = req.params.userId; // Ambil user_id dari parameter URL
+    const userId = req.params.user_id; // Ambil user_id dari parameter URL
+    console.log("user_id param:", req.params.user_id);
     const { username, email, password } = req.body;
 
     try {
-        const user = await User.findOne({ where: { userId } });
+        const user = await User.findOne({ where: { user_id: userId } });
         if (!user) {
             res.status(404).json({ message: "User tidak ditemukan" });
             return;
         }
 
-        await User.update(
+       await User.update(
             { username, email, password },
-            { where: { userId } }
-        );
+            { where: { user_id: userId } }
+            );
 
         res.status(200).json({ success: true });
     } catch (error) {
         res.status(500).json({ message: "Terjadi kesalahan", error });
+        console.log(error);
     }
 }
 
