@@ -3,11 +3,15 @@ import { Request, Response } from "express";
 import { User } from "../../models/user";
 import { Like } from "../../models/like";
 
+
+// import dayjs from 'dayjs';
+
 // -- create post
 export const createPost = async (req: any, res: any) => {
     const { title, content } = req.body;
     const user_id = req.body.user_id; 
 
+    // const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
     try {
         const post = await Post.create({
             title,

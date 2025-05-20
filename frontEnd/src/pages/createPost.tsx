@@ -11,8 +11,7 @@ const CreatePost: React.FC = () => {
   const initialValues = {
     title: '',
     content: '',
-    user_id: '', //ini nanti pake yang session
-    // user_id: localStorage.getItem("user_id") || '', // ini buat nanti kalau udah ada sistem login
+    user_id: localStorage.getItem("user_id") || '', 
   };
 
   const validationSchema = Yup.object().shape({
@@ -85,7 +84,7 @@ const CreatePost: React.FC = () => {
               />
             </div>
   
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium mb-1" htmlFor="user_id">
                 User ID
               </label>
@@ -99,7 +98,7 @@ const CreatePost: React.FC = () => {
                 component="div"
                 className="text-red-500 text-sm mt-1"
               />
-            </div>
+            </div> */}
   
             <div className="flex justify-end">
               <button
