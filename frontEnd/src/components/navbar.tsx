@@ -12,7 +12,7 @@ export const Navbar = () => {
           </Link>
           {/* Desktop Links */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-gray-300 hover:text-white transition-colors">Home</Link>
+            <Link to="/home" className="text-gray-300 hover:text-white transition-colors">Home</Link>
             <Link to="/createpost" className="text-gray-300 hover:text-white transition-colors">Create Post</Link>
             <Link to="/communities" className="text-gray-300 hover:text-white transition-colors">Communities</Link>
             <Link to="/community/create" className="text-gray-300 hover:text-white transition-colors">Create Community</Link>
@@ -55,7 +55,7 @@ export const Navbar = () => {
 
             {/* Desktop Auth */}
             <div>
-                <button> Sign in </button>
+                <button>  </button>
             </div>
 
 

@@ -6,13 +6,13 @@ import { Like } from "../../models/like";
 // -- create post
 export const createPost = async (req: any, res: any) => {
     const { title, content } = req.body;
-    const userId = req.body.userId; 
+    const user_id = req.body.user_id; 
 
     try {
         const post = await Post.create({
             title,
             content,
-            user_id: userId,
+            user_id: user_id,
             createdAt: new Date(),
             updatedAt: new Date(),
         });
