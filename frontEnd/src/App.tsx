@@ -3,6 +3,7 @@ import Home from "./pages/home";
 import Post from "./pages/post";
 import CreatePost from "./pages/createPost";
 import Register from "./pages/register";
+import Profile from "./pages/profile";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 
@@ -16,6 +17,7 @@ const app = () => {
         <Route path="/post/:postId" element={<Post />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </Router>
   );

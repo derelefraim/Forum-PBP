@@ -63,9 +63,9 @@ export const getAllUser = async (req: any, res: any) => {
 
 // -- GET User by ID
 export const getUserById = async (req: any, res: any) => {
-    const userId = req.params.userId; // Ambil user_id dari parameter URL
+    const userId = req.body.userId; // Ambil dari hasil decode JWT
     try {
-        const user = await User.findOne({ where: { userId } });
+        const user = await User.findOne({ where: { user_id: userId } });
         if (!user) {
             res.status(404).json({ message: "User tidak ditemukan" });
             return;

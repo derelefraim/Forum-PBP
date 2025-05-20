@@ -17,7 +17,6 @@ interface Posts {
 
 const Home: React.FC = () => {
 
-
   const navigate = useNavigate();
   const [posts, setPosts] = useState<Posts[]>([]);
 
