@@ -1,6 +1,7 @@
 import { Post } from "../../models/post"; 
 import { Request, Response } from "express";
 import { User } from "../../models/user";
+import { Like } from "../../models/like";
 
 // -- create post
 export const createPost = async (req: any, res: any) => {
@@ -24,11 +25,16 @@ export const createPost = async (req: any, res: any) => {
     }
 }
 
-// -- Get all posts
+// -- Get all posts + its post`s username
 
 export const getAllPosts = async (req: Request, res: Response) => {
   try {
-    const posts = await Post.findAll();
+    const posts = await Post.findAll({
+      include: {
+        model: User,
+        attributes: ["username"]
+      }
+    });
     res.json(posts);
     return;
   } catch (error) {
@@ -133,7 +139,9 @@ export const getPostTitle = async (req: Request, res: Response) => {
   }
 }
 
-//get all variable from a post
+
+
+//get all variable from a post by postId
 export const getAllVariable = async (req: Request, res: Response) => {
   const postId = req.params.postId;  // dari route :postId
   try {
