@@ -13,8 +13,8 @@ interface Posts {
   title: string;
   content: string;
   user_id: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
   user: User;
 }
 
@@ -60,10 +60,10 @@ const Home: React.FC = () => {
             <div className="title">{post.title}</div>
             <div className="body">{post.content}</div>
             <div className="footer">Posted By : {post.user.username}</div>
-            <div className="footer">Created at : {post.created_at}</div>
-            <div className="footer">Updated at : {post.updated_at}</div>
+              Likes &lt;3 : {likesMap[post.post_id] !== undefined ? likesMap[post.post_id] : "Loading..."}
+            <div className="footer">Created at : {post.createdAt}</div>
+            <div className="footer">Updated at : {post.updatedAt}</div>
             <div className="footer">
-              Likes : {likesMap[post.post_id] !== undefined ? likesMap[post.post_id] : "Loading..."}
             </div>
           </div>
         ))}
