@@ -1,5 +1,6 @@
 import { Post } from "../../models/post"; 
 import { Request, Response } from "express";
+import { User } from "../../models/user";
 
 // -- create post
 export const createPost = async (req: any, res: any) => {
@@ -131,5 +132,24 @@ export const getPostTitle = async (req: Request, res: Response) => {
     return;
   }
 }
+
+//get all variable 
+export const getAllVariable = async (req: Request, res: Response) => {
+  const postId = req.params.postId;  // dari route :postId
+  try {
+    const post = await Post.findOne({
+      where: { post_id: postId },
+      attributes: ['post_id', 'title', 'content', 'user_id', 'createdAt', 'updatedAt'],
+      include: [{
+        model: User,
+        attributes: ['username'], 
+      }]
+    });
+    res.json(post);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
 
 

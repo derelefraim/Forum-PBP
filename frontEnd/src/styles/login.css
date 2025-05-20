@@ -1,4 +1,4 @@
-body {
+/* body {
   min-height: 100vh;
   margin: 0;
   background: #18181a;
@@ -6,6 +6,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+} */
+
+body {
+  background: #18181a; /* atau warna lain sesuai kebutuhan */
 }
 
 .login-container {

@@ -81,3 +81,59 @@ export const unlikePost = async (req: Request, res: Response) => {
         });
     }
 };
+
+// -- get all likes for a post
+export const getAllLikesForPost = async (req: Request, res: Response) => {
+    const { post_id } = req.params;
+    
+    try {
+        const likes = await Like.count({
+            where: {
+                post_id,
+            },
+        });
+
+        res.status(200).json({
+            message: "Berhasil mengambil semua like untuk post ini",
+            likes,
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Gagal mengambil semua like untuk post ini",
+            error,
+        });
+    }
+};
+
+// -- get status user like
+export const getUserLikeStatus = async (req: Request, res: Response) => {
+    const { post_id } = req.params;
+    const { user_id } = req.body.user_id; 
+
+    try {
+        // Cek apakah user sudah menyukai post ini
+        const existingLike = await Like.findOne({
+            where: {
+                post_id,
+                user_id,
+            },
+        });
+
+        if (existingLike) {
+            res.status(200).json({
+                message: "User sudah menyukai post ini",
+                status: true
+            });
+        } else {
+            res.status(200).json({
+                message: "User belum menyukai post ini",
+                status: false,
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Gagal mengambil status like",
+            error,
+        });
+    }
+}

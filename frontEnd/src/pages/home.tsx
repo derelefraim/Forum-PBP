@@ -1,37 +1,50 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { IoEyeOffSharp, IoEyeSharp } from "react-icons/io5";
-import { fetchFromAPI } from "../../../backend/src/api/api.ts"; // Adjust the import path as necessary
-const LoginPage: React.FC = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import "../styles/home.css";
+import { useNavigate } from "react-router";
+import { Navbar } from "../components/navbar.tsx";
 
-  const handleLogin = async () => {
-    try {
-      const response = await fetchFromAPI('/login', 'POST', { username, password });
-      const token = response.token;
-      localStorage.setItem('token', token); 
-    //   navigate('/'); // Redirect to home or profile after successful login
-    //   navigate('/home'); // Redirect to home or profile after successful login
-    } catch (error) {
-      setError('Login failed. Please check your credentials.');
-    }
-  };
+interface Posts {
+  post_id: number;
+  title: string;
+  content: string;
+  user_id: number;
+  created_at: string;
+  updated_at: string;
+  likes: string;
+  username: string;
+}
+
+const Home: React.FC = () => {
+
+
+  const navigate = useNavigate();
+  const [posts, setPosts] = useState<Posts[]>([]);
+
+  useEffect(() => {
+    axios.get("http://localhost:3000/post").then((response) => {
+      setPosts(response.data);
+    });
+  }, []);
 
   return (
-    <div className="login-container">
-      <div className="login-box">
-        <h2>Login</h2>
-        <p>
-          Don't have an account? <a href="/register">Register</a>
-        </p>
-        <button onClick={() => navigate("/")}>Back to Home</button>
+    <div className="min-h-screen bg-black text-gray-100 transition-opacity duration-700 pt-20">
+      <Navbar />
+
+      <div className="p-4">
+        {posts.map((post) => (
+          <div className="post" onClick={() => navigate(`/post/${post.post_id}`)}>
+            <div className="title"> {post.title} </div>
+            <div className="body"> {post.content} </div>
+            <div className="footer">Posted By : {post.username}</div>
+            <div className="footer"> {post.created_at} </div>
+            <div className="footer"> {post.updated_at} </div>
+            <div className="footer"> Likes : {post.likes} </div>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default Home;

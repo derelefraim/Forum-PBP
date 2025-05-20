@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/login.css";
 import { fetchFromAPI } from "../../../backend/src/api/api.ts"; // Adjust the import path as necessary
 
 
@@ -22,7 +21,7 @@ const RegisterPage: React.FC = () => {
     try {
       const response = await fetchFromAPI('/user/register', 'POST', { username, email, password });
       console.log(response);
-      alert("Register success");
+      alert("Register success, boleh login lagi dong");
       navigate("/login");
     } catch (error) {
       console.error('Registration failed', error);
