@@ -50,7 +50,7 @@ const Post: React.FC = () => {
         </div>
       </div>
 
-      <div className="rightSide">Comments</div>
+      <div style={{ color: "white" }}>Comments</div>
     </div>
   );
 };

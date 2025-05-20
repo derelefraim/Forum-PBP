@@ -1,5 +1,5 @@
 import express from 'express';
-import {createPost, getAllPosts, getPostById, updatePost, deletePost, getPostContent, getPostTitle} from '../controller/post';
+import {createPost, getAllPosts, getPostById, updatePost, deletePost, getPostContent, getPostTitle, getAllVariable} from '../controller/post';
 import { authenticateJWT } from '../middleware/Auth'; 
 
 const postRouter = express.Router();
@@ -25,7 +25,7 @@ postRouter.get('/:postId/getPostContent',
 postRouter.get('/:postId/getPostTitle', 
     // authenticateJWT,
      getPostTitle); // udah
-
+     postRouter.get('/:postId/getAllVariable',/* authenticateJWT,*/ getAllVariable); // baru
 export default postRouter;
 
 
