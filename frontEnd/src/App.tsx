@@ -4,6 +4,7 @@ import Post from "./pages/post";
 import CreatePost from "./pages/createPost";
 import Register from "./pages/register";
 import Profile from "./pages/profile";
+import EditProfile from "./pages/editProfile";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 
@@ -11,6 +12,7 @@ const app = () => {
   return (
     <Router>
       <Routes>
+        <Route path="/editProfile" element={<EditProfile />} />
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<Home />} />
         <Route path="/createpost" element={<CreatePost />} />
