@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { fetchFromAPI } from "../../../backend/src/api/api.ts";
 import { useNavigate } from "react-router-dom";
+import "../styles/profile.css";
+
 
 interface UserProfile {
   user_id: string;
@@ -16,7 +18,7 @@ const ProfilePage: React.FC = () => {
 useEffect(() => {
   const fetchProfile = async () => {
     try {
-      const data = await fetchFromAPI("/user/getUserById", "get",null);
+      const data = await fetchFromAPI("/user/getUserById", "GET");
       setProfile(data.user || data);
       console.log("Profile data:", data);
     } catch (err) {
@@ -29,33 +31,33 @@ useEffect(() => {
 
   
   return (
-    <div style={{
-      display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh"
-    }}>
-      <div style={{
-        background: "#232326", padding: "36px 48px", borderRadius: "18px", boxShadow: "0 8px 32px 0 rgba(0,0,0,0.28)",
-        minWidth: "340px"
-      }}>
-        <h2 style={{ color: "#fff", marginBottom: "18px" }}>Profile</h2>
-        {error && <p style={{ color: "#ff6b6b" }}>{error}</p>}
+    <div className="profile-container">
+      <div className="profile-card">
+        <h1 className="profile-title">Profile of {profile?.username}</h1>
+        {error && <p className="profile-error">{error}</p>}
         {profile ? (
-          <div style={{ color: "#eaeaea", fontSize: "1.1rem" }}>
-            <p><strong>User ID:</strong> {profile.user_id}</p>
-            <p><strong>Username:</strong> {profile.username}</p>
-            <p><strong>Email:</strong> {profile.email}</p>
+          <div className="profile-info">
+            <p className="profile-info"><strong>User ID :</strong> {profile.user_id}</p>
+            <p className="profile-info"><strong>Username:</strong> {profile.username}</p>
+            <p className="profile-info"><strong>Email :</strong> {profile.email}</p>
           </div>
         ) : (
-          !error && <p style={{ color: "#bdbdbd" }}>Loading...</p>
+          !error && <p className="profile-loading">Loading...</p>
         )}
-        <button
-          style={{
-            marginTop: "24px", background: "#35353b", color: "#eaeaea", border: "none",
-            borderRadius: "8px", padding: "10px 24px", fontSize: "1rem", cursor: "pointer"
-          }}
-          onClick={() => navigate("/home")}
-        >
-          Back to Home
-        </button>
+        <div className="profile-buttons">
+          <button
+            className="profile-btn-back"
+            onClick={() => navigate("/home")}
+          >
+            Back to Home
+          </button>
+          <button
+            className="profile-btn-edit"
+            onClick={() => navigate("/editProfile")}
+          >
+            Edit Profile
+          </button>
+        </div>
       </div>
     </div>
   );

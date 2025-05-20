@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { IoEyeOffSharp, IoEyeSharp } from "react-icons/io5";
 import { fetchFromAPI } from "../../../backend/src/api/api.ts"; // Adjust the import path as necessary
 import '../styles/login.css'; 
 
@@ -9,6 +8,7 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+
   const navigate = useNavigate();
 
   const handleLogin = async (event: React.FormEvent) => {
@@ -17,15 +17,9 @@ const LoginPage: React.FC = () => {
       const response = await fetchFromAPI('/user/login', 'POST', { email, password });
       const token = response.token;
       localStorage.setItem('token', token); 
-      navigate('/home'); // Redirect to home or profile after successful login
-      console.log("Login successful", response);
-    console.log("Password yang dikirim:", password);
+      navigate('/profile'); 
     } catch (error) {
       setError('Login failed. Please check your credentials.');
-      console.log("Login gagal");
-      console.log("Password yang dikirim:", password);
-
-
     }
   };
 

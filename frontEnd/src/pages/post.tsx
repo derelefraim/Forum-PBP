@@ -1,6 +1,8 @@
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { Navbar } from "../components/navbar.tsx";
+  
 
 interface PostObject {
   title: string;
@@ -32,7 +34,10 @@ const Post: React.FC = () => {
   }, [postId]); 
 
   return (
+    
     <div className="postPage">
+    <Navbar />
+
       <div className="leftSide">
         <div className="post" id="individual">
           {post ? (
