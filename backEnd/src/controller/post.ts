@@ -133,7 +133,7 @@ export const getPostTitle = async (req: Request, res: Response) => {
   }
 }
 
-//get all variable 
+//get all variable from a post
 export const getAllVariable = async (req: Request, res: Response) => {
   const postId = req.params.postId;  // dari route :postId
   try {
