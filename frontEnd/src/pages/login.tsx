@@ -16,9 +16,9 @@ const LoginPage: React.FC = () => {
     try {
       const response = await fetchFromAPI('/user/login', 'POST', { email, password });
       const token = response.token;
-      const user_id = response.user_id; // Assuming the response contains user_id
+      // const user_id = response.user_id; // Assuming the response contains user_id
       localStorage.setItem('token', token); 
-      localStorage.setItem('user_id', user_id); // Store user_id in local storage
+      // localStorage.setItem('user_id', user_id); // Store user_id in local storage
       navigate('/profile'); 
     } catch (error) {
       setError('Login failed. Please check your credentials.');
