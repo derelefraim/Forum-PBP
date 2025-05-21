@@ -21,11 +21,11 @@ const Post: React.FC = () => {
 
   const [post, setPost] = useState<PostObject | null>(null);
 
+
   useEffect(() => {
     if (!postId) return; 
 
-    axios.get(`http://localhost:3000/post/${postId}/getAllVariable`)
-      .then((response) => {
+    axios.get(`http://localhost:3000/post/${postId}/getAllVariable`).then((response) => {
         setPost(response.data);
       })
       .catch((error) => {
