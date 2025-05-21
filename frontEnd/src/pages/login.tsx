@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchFromAPI } from "../../../backend/src/api/api.ts"; // Adjust the import path as necessary
 import '../styles/login.css'; 
@@ -8,8 +8,20 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [info, setInfo] = useState(""); // Tambahkan state untuk pesan info
+
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+      if (token) {
+    setInfo("Kamu sudah login, silakan logout");
+    setTimeout(() => {
+      navigate('/profile');
+    }, 2000); 
+  }
+  }, [navigate]);
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -19,7 +31,7 @@ const LoginPage: React.FC = () => {
       const user_id = response.user_id; // Assuming the response contains user_id
       localStorage.setItem('token', token); 
       localStorage.setItem('user_id', user_id); // Store user_id in local storage
-      navigate('/profile'); 
+      navigate('/home'); 
     } catch (error) {
       setError('Login failed. Please check your credentials.');
     }
@@ -29,6 +41,7 @@ const LoginPage: React.FC = () => {
     <div className="login-container">
       <div className="login-box">
         <h2>Login</h2>
+        {info && <p className="info-message">{info}</p>} {/* Tampilkan pesan info */}
         {error && <p className="error-message">{error}</p>}
         <form onSubmit={handleLogin}>
           <input

@@ -61,3 +61,18 @@
 .profile-info{
     margin-bottom: 16px;
 }
+
+.profile-btn-logout {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.profile-btn-logout:hover {
+  background: #c0392b;
+}
