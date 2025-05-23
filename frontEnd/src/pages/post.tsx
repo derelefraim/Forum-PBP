@@ -63,8 +63,8 @@ const Post: React.FC = () => {
       }
     };
 
-  //   loadComments();
-  // }, []);
+    loadComments();
+  }, []);
   // useEffect(() => {
   //     const fetchProfile = async () => {
   //       try {
