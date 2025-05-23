@@ -40,16 +40,16 @@ const CreatePost: React.FC = () => {
     content: Yup.string().required('Isi konten wajib diisi')
   });
 
-  const onSubmit = (data: typeof initialValues) => {
-    axios.post("http://localhost:3000/post/CreatePost", data)
-      .then(() => {
-        alert("Post Created");
-        navigate("/home");
-      })
-      .catch(err => {
-        console.error(err);
-      });
-  };
+const onSubmit = async (data: typeof initialValues) => {
+  try {
+    await fetchFromAPI("/post/CreatePost", "POST", data);
+    alert("Post Created");
+    navigate("/home");
+  } catch (err) {
+    console.error("Error creating post:", err);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-900 text-white pt-20">

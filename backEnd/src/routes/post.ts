@@ -4,9 +4,7 @@ import { authenticateJWT } from '../middleware/Auth';
 
 const postRouter = express.Router();
 
-postRouter.get('', 
-   
-     getAllPosts); // udah
+postRouter.get('', getAllPosts); // udah
 postRouter.post('/CreatePost', 
    
      createPost); // udah
