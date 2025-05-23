@@ -13,7 +13,7 @@ interface PostObject {
   user: {
     username: string;
   };
-  likes: number;
+  totalLikes: number;
   comments?: CommentObject[];
 
 }
@@ -46,19 +46,19 @@ const Post: React.FC = () => {
       });
   }, [post_id]);
 
-  useEffect(() => {
-    const loadComments = async () => {
-      try {
-        const data = await fetchFromAPI(`/comment/getComment/${post_id}`); // adjust endpoint
-        setComments(data.comments); // 'comments' is from res.json({ comments: roots })
-        console.log("Comments:", data.comments);
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const loadComments = async () => {
+  //     try {
+  //       const data = await fetchFromAPI(`/comment/getComment/${post_id}`); // adjust endpoint
+  //       setComments(data.comments); // 'comments' is from res.json({ comments: roots })
+  //       console.log("Comments:", data.comments);
+  //     } catch (error) {
+  //       console.error("Error fetching comments:", error);
+  //     }
+  //   };
 
-    loadComments();
-  }, []);
+  //   loadComments();
+  // }, []);
   // useEffect(() => {
   //     const fetchProfile = async () => {
   //       try {
@@ -100,10 +100,10 @@ const Post: React.FC = () => {
                 <div className="footer">Posted by: {post.user.username}</div>
                 <div className="footer">Created at: {post.createdAt}</div>
                 <div className="footer">Updated at: {post.updatedAt}</div>
-                <div className="footer">Likes: {post.likes}</div>
+                <div className="footer">Likes: {post.totalLikes}</div>
               </>
             ) : (
-              <div>Loading post...</div>
+              <div>Loading post...</div>  
             )}
           </div>
         </div>
