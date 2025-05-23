@@ -32,7 +32,6 @@ const LoginPage: React.FC = () => {
       localStorage.setItem('token', token); 
       // localStorage.setItem('user_id', user_id); // Store user_id in local storage
       navigate('/profile'); 
-      localStorage.setItem('user_id', user_id); // Store user_id in local storage
       navigate('/home'); 
     } catch (error) {
       setError('Login failed. Please check your credentials.');

@@ -4,28 +4,15 @@ import { authenticateJWT } from '../middleware/Auth';
 
 const postRouter = express.Router();
 
-postRouter.get('', 
-   
-     getAllPosts); // udah
-postRouter.post('/CreatePost', 
-   
-     createPost); // udah
-postRouter.get('/getPostById', 
-   
-     getPostById);  // udah
-postRouter.put('/:postId/updatePost', 
-   
-     updatePost); // udah 
-postRouter.delete('/:postId/deletePost', 
-   
-     deletePost); // udah
-postRouter.get('/:postId/getPostContent', 
-   
-     getPostContent); // udah
-postRouter.get('/:postId/getPostTitle', 
-   
-     getPostTitle); // udah
-     postRouter.get('/:postId/getAllVariable', getAllVariable); // baru
+postRouter.get('', getAllPosts); // udah
+postRouter.post('/CreatePost',authenticateJWT, createPost); // udah
+postRouter.get('/getPostById', getPostById);  // udah
+postRouter.put('/:postId/updatePost',authenticateJWT, updatePost); // udah 
+postRouter.delete('/:postId/deletePost',authenticateJWT, deletePost); // udah
+postRouter.get('/:postId/getPostContent', getPostContent); // udah
+postRouter.get('/:postId/getPostTitle', getPostTitle); // udah
+postRouter.get('/:post_id/getAllVariable', getAllVariable); // baru
+
 export default postRouter;
 
 

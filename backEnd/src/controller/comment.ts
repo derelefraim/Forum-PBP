@@ -1,6 +1,7 @@
 import { Comment } from "../../models/comment";
 import { Request, Response } from "express";
 import { v4 as uuidv4 } from 'uuid';
+import { User } from "../../models/user";
 
 interface CommentNode {
     comment_id: string;
@@ -187,4 +188,24 @@ export const deleteComment = async (req: Request, res: Response) => {
         });
         return;
     }
+};
+
+export const getCommentsWithUser = async (req: Request, res: Response) => {
+  try {
+    const comments = await Comment.findAll({
+      where: { post_id: req.params.post_id },
+      include: [
+        {
+          model: User,
+          attributes: ['username', 'email']
+        }
+      ]
+    });
+    res.json({ comments });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch comments with user data",
+      error
+    });
+  }
 };

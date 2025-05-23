@@ -147,10 +147,10 @@ export const getPostTitle = async (req: Request, res: Response) => {
 
 //get all variable from a post by postId
 export const getAllVariable = async (req: Request, res: Response) => {
-  const postId = req.params.postId;  // dari route :postId
+  const post_id = req.params.post_id;  // dari route :post_id
   try {
     const post = await Post.findOne({
-      where: { post_id: postId },
+      where: { post_id: post_id },
       attributes: ['post_id', 'title', 'content', 'user_id', 'createdAt', 'updatedAt'],
       include: [{
         model: User,
