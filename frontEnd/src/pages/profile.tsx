@@ -15,21 +15,21 @@ const ProfilePage: React.FC = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-useEffect(() => {
-  const fetchProfile = async () => {
-    try {
-      const data = await fetchFromAPI("/user/getUserById", "GET");
-      setProfile(data.user || data);
-      console.log("Profile data:", data);
-    } catch (err) {
-      console.error("Error fetching profile:", err);
-      setError("Gagal mengambil data profile.");
-    }
-  };
-  fetchProfile();
-}, []);
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const data = await fetchFromAPI("/user/getUserById", "GET");
+        setProfile(data.user || data);
+        console.log("Profile data:", data);
+      } catch (err) {
+        console.error("Error fetching profile:", err);
+        setError("Gagal mengambil data profile.");
+      }
+    };
+    fetchProfile();
+  }, []);
 
-  
+
   return (
     <div className="profile-container">
       <div className="profile-card">
@@ -56,6 +56,16 @@ useEffect(() => {
             onClick={() => navigate("/editProfile")}
           >
             Edit Profile
+          </button>
+          <button
+            className="profile-btn-logout"
+            onClick={() => {
+              localStorage.removeItem('token');
+              localStorage.removeItem('user_id');
+              navigate('/login');
+            }}
+          >
+            Logout
           </button>
         </div>
       </div>
