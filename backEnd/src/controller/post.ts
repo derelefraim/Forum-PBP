@@ -33,11 +33,6 @@ export const createPost = async (req: any, res: any) => {
 export const getAllPosts = async (req: Request, res: Response) => {
   try {
     const posts = await Post.findAll({
-      attributes: {
-        include: [
-          [fn('COUNT', col('likes.like_id')), 'totalLikes']
-        ]
-      },
       include: [
         {
           model: User,
@@ -48,7 +43,14 @@ export const getAllPosts = async (req: Request, res: Response) => {
           attributes: []
         }
       ],
-      group: ['Post.post_id', 'user.user_id'] // <-- pastikan ini sesuai alias include
+
+      attributes: {
+        include: [
+          [fn('COUNT', col('likes.like_id')), 'totalLikes']
+        ]
+      },
+
+      group: ['Post.post_id', 'user.user_id'] 
     });
 
     res.json(posts);
