@@ -22,6 +22,12 @@ export const getCommentsByPostId = async (req: Request, res: Response) => {
         const comments = await Comment.findAll({
             where: { post_id },
             order: [['createdAt', 'ASC']],
+            include: [
+                {
+                    model: User,
+                    attributes: ['username','user_id'],
+                }
+            ],
             raw: true,
         });
 
@@ -64,13 +70,13 @@ export const getCommentsByPostId = async (req: Request, res: Response) => {
 export const createComment = async (req: Request, res: Response) => {
     try {
         const { content, post_id, parent_comment_id } = req.body;
-        const user_id = req.body.userId; 
+        const user_id = req.body.userId;
         console.log("user_id", user_id);
         console.log("post_id", post_id);
         console.log("parent_comment_id", parent_comment_id);
         console.log("content", content);
         if (!content || !user_id || !post_id) {
-            
+
             res.status(400).json({ message: "Field wajib: content, user_id, post_id" });
             return;
         }
@@ -191,21 +197,21 @@ export const deleteComment = async (req: Request, res: Response) => {
 };
 
 export const getCommentsWithUser = async (req: Request, res: Response) => {
-  try {
-    const comments = await Comment.findAll({
-      where: { post_id: req.params.post_id },
-      include: [
-        {
-          model: User,
-          attributes: ['username', 'email']
-        }
-      ]
-    });
-    res.json({ comments });
-  } catch (error) {
-    res.status(500).json({
-      message: "Failed to fetch comments with user data",
-      error
-    });
-  }
+    try {
+        const comments = await Comment.findAll({
+            where: { post_id: req.params.post_id },
+            include: [
+                {
+                    model: User,
+                    attributes: ['username', 'email']
+                }
+            ]
+        });
+        res.json({ comments });
+    } catch (error) {
+        res.status(500).json({
+            message: "Failed to fetch comments with user data",
+            error
+        });
+    }
 };

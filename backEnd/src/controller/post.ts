@@ -50,7 +50,6 @@ export const getAllPosts = async (req: Request, res: Response) => {
       ],
       group: ['Post.post_id', 'user.user_id'] // <-- pastikan ini sesuai alias include
     });
-
     res.json(posts);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching posts', error });
