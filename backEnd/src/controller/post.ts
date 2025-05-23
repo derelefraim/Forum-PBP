@@ -2,7 +2,7 @@ import { Post } from "../../models/post";
 import { Request, Response } from "express";
 import { User } from "../../models/user";
 import { Like } from "../../models/like";
-
+import { fn, col } from 'sequelize';
 
 // import dayjs from 'dayjs';
 
@@ -29,23 +29,34 @@ export const createPost = async (req: any, res: any) => {
     }
 }
 
-// -- Get all posts + its post`s username
-
+// -- Get all posts + its post`s username + bikin virtual column totalLikes
 export const getAllPosts = async (req: Request, res: Response) => {
   try {
     const posts = await Post.findAll({
-      include: {
-        model: User,
-        attributes: ["username"]
-      }
+      attributes: {
+        include: [
+          [fn('COUNT', col('likes.like_id')), 'totalLikes']
+        ]
+      },
+      include: [
+        {
+          model: User,
+          attributes: ['username']
+        },
+        {
+          model: Like,
+          attributes: []
+        }
+      ],
+      group: ['Post.post_id', 'user.user_id'] // <-- pastikan ini sesuai alias include
     });
+
     res.json(posts);
-    return;
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching posts', error: error });
-    return;
+    res.status(500).json({ message: 'Error fetching posts', error });
   }
 };
+
 
 // -- Get post by UserId
 export const getPostById = async (req: Request, res: Response) => {

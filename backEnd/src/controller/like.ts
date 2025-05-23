@@ -2,6 +2,8 @@ import { Like } from "../../models/like";
 import { Request, Response } from "express";
 import { v4 as uuidv4 } from 'uuid';
 
+
+
 // -- like a post
 export const likePost = async (req: Request, res: Response) => {
     const { post_id } = req.params;
