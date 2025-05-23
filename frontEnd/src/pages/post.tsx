@@ -13,7 +13,7 @@ interface PostObject {
   user: {
     username: string;
   };
-  likes: number;
+  totalLikes: number;
   comments?: CommentObject[];
 
 }
@@ -63,8 +63,8 @@ const Post: React.FC = () => {
       }
     };
 
-    loadComments();
-  }, []);
+  //   loadComments();
+  // }, []);
   // useEffect(() => {
   //     const fetchProfile = async () => {
   //       try {
@@ -106,10 +106,10 @@ const Post: React.FC = () => {
                 <div className="footer">Posted by: {post.user.username}</div>
                 <div className="footer">Created at: {post.createdAt}</div>
                 <div className="footer">Updated at: {post.updatedAt}</div>
-                <div className="footer">Likes: {post.likes}</div>
+                <div className="footer">Likes: {post.totalLikes}</div>
               </>
             ) : (
-              <div>Loading post...</div>
+              <div>Loading post...</div>  
             )}
           </div>
         </div>

@@ -33,11 +33,6 @@ export const createPost = async (req: any, res: any) => {
 export const getAllPosts = async (req: Request, res: Response) => {
   try {
     const posts = await Post.findAll({
-      attributes: {
-        include: [
-          [fn('COUNT', col('likes.like_id')), 'totalLikes']
-        ]
-      },
       include: [
         {
           model: User,
@@ -48,11 +43,45 @@ export const getAllPosts = async (req: Request, res: Response) => {
           attributes: []
         }
       ],
-      group: ['Post.post_id', 'user.user_id'] // <-- pastikan ini sesuai alias include
+
+      attributes: {
+        include: [
+          [fn('COUNT', col('likes.like_id')), 'totalLikes']
+        ]
+      },
+
+      group: ['Post.post_id', 'user.user_id'] 
     });
     res.json(posts);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching posts', error });
+  }
+};
+
+
+//get all variable from a post by postId
+export const getAllVariable = async (req: Request, res: Response) => {
+  const post_id = req.params.post_id;  // dari route :post_id
+  try {
+    const post = await Post.findOne({
+      where: { post_id: post_id },
+      attributes: ['post_id', 'title', 'content', 'user_id', 'createdAt', 'updatedAt' , [fn('COUNT', col('likes.like_id')), 'totalLikes']],
+      include: [
+        {
+        model: User,
+        attributes: ['username'], 
+       },
+       { 
+        model: Like,
+        attributes: []
+       }
+    ],
+    group: ['Post.post_id', 'user.user_id']
+    });
+    res.json(post);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 };
 
@@ -155,23 +184,5 @@ export const getPostTitle = async (req: Request, res: Response) => {
 
 
 
-//get all variable from a post by postId
-export const getAllVariable = async (req: Request, res: Response) => {
-  const post_id = req.params.post_id;  // dari route :post_id
-  try {
-    const post = await Post.findOne({
-      where: { post_id: post_id },
-      attributes: ['post_id', 'title', 'content', 'user_id', 'createdAt', 'updatedAt'],
-      include: [{
-        model: User,
-        attributes: ['username'], 
-      }]
-    });
-    res.json(post);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
-  }
-};
 
 

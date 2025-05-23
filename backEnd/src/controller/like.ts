@@ -7,24 +7,26 @@ import { v4 as uuidv4 } from 'uuid';
 // -- like a post
 export const likePost = async (req: Request, res: Response) => {
     const { post_id } = req.params;
-    const { user_id } = req.body.user_id; // Ambil user_id dari body request
+    const { userId: user_id } = req.body; // Ambil user_id dari body request
 
     try {
         // Cek apakah user sudah menyukai post ini
+        console.log("user_id1", user_id);
         const existingLike = await Like.findOne({
             where: {
                 post_id,
                 user_id,
             },
         });
-
+        
+        console.log("user_id2", user_id);
         if (existingLike) {
             res.status(400).json({
                 message: "User sudah menyukai post ini",
             });
             return;
         }
-
+        console.log("user_id3", user_id);
         // Buat like baru
         const newLike = await Like.create({
             like_id: uuidv4(),
