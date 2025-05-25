@@ -18,6 +18,7 @@ interface Posts {
   updatedAt: string;
   totalLikes: number;
   user: User;
+  likedByCurrentUser?: boolean; // Assume this is provided by the backend
 }
 
 const Home: React.FC = () => {
@@ -65,7 +66,7 @@ const Home: React.FC = () => {
         setPosts((prevPosts) =>
           prevPosts.map((post) =>
             post.post_id === postId
-              ? { ...post, totalLikes: post.totalLikes + 1 }
+              ? { ...post, totalLikes: Number(post.totalLikes + 1) }
               : post
           )
         );
@@ -77,26 +78,30 @@ const Home: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const data = await fetchFromAPI("/user/getUserById", "GET");
-      setUSerId(data.user.user_id);
-      console.log("Profile data:", data);
+      // Fetch user data
+      const userData = await fetchFromAPI("/user/getUserById", "GET");
+      setUSerId(userData.user.user_id);
+
+      // Fetch posts data
+      const response = await axios.get("http://localhost:3000/post");
+      const postsData = response.data;
+
+      // Map liked posts for the current user
+      const likedPostsMap: { [key: string]: boolean } = {};
+      postsData.forEach((post: Posts) => {
+        likedPostsMap[post.post_id] = post.likedByCurrentUser || false; // Assume `likedByCurrentUser` is provided by the backend
+      });
+
+      setPosts(postsData);
+      setLikedPosts(likedPostsMap);
     } catch (err) {
-      console.error("Error fetching profile:", err);
-      setError("Gagal mengambil data profile.");
+      console.error("Error fetching data:", err);
+      setError("Gagal mengambil data.");
     }
   };
 
   useEffect(() => {
     fetchData();
-    axios
-      .get("http://localhost:3000/post")
-      .then((response) => {
-        setPosts(response.data);
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.error("Failed to fetch posts:", error);
-      });
   }, []);
 
   return (
@@ -114,7 +119,7 @@ const Home: React.FC = () => {
               <div className="title">{post.title}</div>
               <div className="body">{post.content}</div>
               <div className="footer">Posted By : {post.user.username}</div>
-              <div className="footer">Total Likes : {post.totalLikes}</div>
+              <div className="footer">Total Likes : {Number(post.totalLikes)}</div>
               <div className="footer">Created at : {post.createdAt}</div>
               <div className="footer">Updated at : {post.updatedAt}</div>
 

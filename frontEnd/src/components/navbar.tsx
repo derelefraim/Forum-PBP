@@ -14,8 +14,8 @@ export const Navbar = () => {
     const fetchData = async () => {
       try {
         const data = await fetchFromAPI("/user/getUserById", "GET");
-        setUsername(data.user.username); // Simpan username ke state
-+      } catch (err) {
+  setUsername(data.user.username); // Simpan username ke state
+} catch (err) {
         console.error("Error fetching profile:", err);
         setError("Gagal mengambil data profile.");
       }
