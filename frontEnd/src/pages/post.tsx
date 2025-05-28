@@ -29,7 +29,7 @@ interface CommentObject {
   post_id: string;
   parent_comment_id: string | null;
   updatedAt: string;
-  user: UserObject;
+  username: string; // Add this
   replies?: CommentObject[];
 }
 
@@ -37,10 +37,6 @@ interface TokenPayload {
   userId: string;
   iat: number;
   exp: number;
-}
-
-interface UserObject {
-  username: string;
 }
 
 const Post: React.FC = () => {
@@ -54,7 +50,8 @@ const Post: React.FC = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [user_name, setUser_name] = useState<string>("Unknown User");
   const token = localStorage.getItem("token");  
-
+  const [replyingTo, setReplyingTo] = useState<CommentObject | null>(null);
+  const [replyContent, setReplyContent] = useState("");
   useEffect(() => {
     if (token) {
       const decoded = jwtDecode<TokenPayload>(token);
@@ -173,7 +170,17 @@ const Post: React.FC = () => {
         },
       });
 
-      setComments((prev) => prev.filter((c) => c.comment_id !== comment_id));
+      // Fungsi rekursif untuk menghapus comment dari tree
+      function removeCommentRecursive(comments: CommentObject[], commentId: string): CommentObject[] {
+        return comments
+          .filter(comment => comment.comment_id !== commentId)
+          .map(comment => ({
+            ...comment,
+            replies: comment.replies ? removeCommentRecursive(comment.replies, commentId) : [],
+          }));
+      }
+
+      setComments((prev) => removeCommentRecursive(prev, comment_id));
       alert("Komentar berhasil dihapus");
     } catch (error: any) {
       console.error("Gagal menghapus komentar:", {
@@ -193,6 +200,7 @@ const Post: React.FC = () => {
     const loadComments = async () => {
       try {
         const data = await fetchFromAPI(`/comment/getComment/${post_id}`);
+        console.log("API comments:", data.comments); // Tambahkan ini
         setComments(data.comments);
       } catch (error) {
         console.error("Error fetching comments:", error);
@@ -223,7 +231,13 @@ const Post: React.FC = () => {
         }
       );
 
-      setComments((prev) => [...prev, response.data.comment]);
+      // If your backend doesn't return username, add it manually:
+      // const newComment = { ...response.data.comment, username: user_name };
+      // setComments((prev) => [...prev, newComment]);
+
+      // If your backend returns username, just refetch:
+      const data = await fetchFromAPI(`/comment/getComment/${post_id}`);
+      setComments(data.comments);
       setNewCommentContent("");
       showComment();
     } catch (error) {
@@ -231,6 +245,86 @@ const Post: React.FC = () => {
       alert("Gagal menambahkan komentar");
     }
   };
+
+  const closeReplyPopup = () => {
+    setReplyingTo(null);
+    setReplyContent("");
+  };
+
+  const handleReplySubmit = async () => {
+    if (!replyContent.trim() || !replyingTo) return;
+    try {
+      await axios.post(
+        "http://localhost:3000/comment/createComment",
+        {
+          content: replyContent,
+          post_id,
+          parent_comment_id: replyingTo.comment_id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      // Refresh comments
+      const data = await fetchFromAPI(`/comment/getComment/${post_id}`);
+      setComments(data.comments);
+      closeReplyPopup();
+    } catch (error) {
+      alert("Gagal membalas komentar");
+    }
+  };
+
+  const renderComments = (comments: CommentObject[], level = 0) => (
+    <ul style={{ marginLeft: level * 24 }}>
+      {comments.map((comment, idx) => (
+        <li
+          key={comment.comment_id}
+          style={{
+            marginBottom: "1rem",
+            borderBottom: "1px solid #ccc",
+            paddingBottom: "0.5rem",
+          }}
+        >
+          <div>
+            <strong>{comment["user.username"] || comment.username || "Unknown User"}</strong>
+          </div>
+          <div>{comment.content}</div>
+          {comment.user_id === userId && (
+            <>
+              <button
+                onClick={() => {
+                  setUser_name(comment.username);
+                  setEditingCommentId(comment.comment_id);
+                  setEditedContent(comment.content);
+                }}
+                className="edit-button"
+                style={{ marginRight: "0.5rem" }}
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => deleteComment(comment.comment_id)}
+                className="delete-button"
+                style={{ marginRight: "0.5rem" }}
+              >
+                Delete
+              </button>
+            </>
+          )}
+          <button
+            onClick={() => setReplyingTo(comment)}
+            className="reply-button"
+          >
+            Reply
+          </button>
+          {/* Render replies recursively */}
+          {comment.replies && comment.replies.length > 0 && renderComments(comment.replies, level + 1)}
+        </li>
+      ))}
+    </ul>
+  );
 
   return (
     <div className="postPage">
@@ -266,7 +360,7 @@ const Post: React.FC = () => {
                 Posted By: <span className="text-white">{post.user.username}</span>
               </div>
               <div>
-                Total Likes: <span className="text-red-500">{Number(post.totalLikes)} ❤️</span>
+                <span className="text-red-500">{Number(post.totalLikes)} ❤️</span>
               </div>
               <div>
                 Category: <span className="text-blue-400">{post.category}</span>
@@ -312,72 +406,7 @@ const Post: React.FC = () => {
         </div>
         <div className="commentSection">
           <h1>Comments</h1>
-          <ul>
-            {comments.map((comment, idx) => (
-              <li
-                key={idx}
-                style={{
-                  marginBottom: "1rem",
-                  borderBottom: "1px solid #ccc",
-                  paddingBottom: "0.5rem",
-                }}
-              >
-                <div>
-                  <strong>{comment["user.username"] || "Unknown User"} </strong>
-                </div>
-                {editingCommentId === comment.comment_id ? (
-                  <>
-                    <textarea
-                      rows={3}
-                      style={{ width: "100%" }}
-                      value={editedContent}
-                      onChange={(e) => setEditedContent(e.target.value)}
-                    />
-                    <button
-                      onClick={() => {
-                        editComment(comment.comment_id);
-                      }}
-                      className="save-button"
-                      style={{ marginRight: "0.5rem" }}
-                    >
-                      Simpan
-                    </button>
-                    <button
-                      onClick={() => setEditingCommentId(null)}
-                      className="cancel-button"
-                    >
-                      Batal
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <div>{comment.content}</div>
-                    {comment.user_id === userId && (
-                      <>
-                        <button
-                          onClick={() => {
-                            setUser_name(comment.user.username);
-                            setEditingCommentId(comment.comment_id);
-                            setEditedContent(comment.content);
-                          }}
-                          className="edit-button"
-                          style={{ marginRight: "0.5rem" }}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => deleteComment(comment.comment_id)}
-                          className="delete-button"
-                        >
-                          Delete
-                        </button>
-                      </>
-                    )}
-                  </>
-                )}
-              </li>
-            ))}
-          </ul>
+          {renderComments(comments)}
           <div style={{ marginTop: "1rem" }}>
             <textarea
               placeholder="Tulis komentar..."
@@ -388,9 +417,39 @@ const Post: React.FC = () => {
             />
             <button onClick={handleAddComment} className="comment-button">
               Tambah Komentar
-            </button> 
+            </button>
           </div>
         </div>
+        {replyingTo && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-gray-800 p-6 rounded shadow-lg w-full max-w-md">
+              <h2 className="text-lg mb-2 text-white">
+                Reply to: <span className="text-blue-400">{replyingTo.username}</span>
+              </h2>
+              <textarea
+                className="w-full p-2 rounded bg-gray-700 text-white mb-4"
+                rows={4}
+                value={replyContent}
+                onChange={(e) => setReplyContent(e.target.value)}
+                placeholder="Tulis balasan..."
+              />
+              <div className="flex justify-end">
+                <button
+                  className="mr-2 px-4 py-2 bg-gray-600 rounded text-white"
+                  onClick={closeReplyPopup}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="px-4 py-2 bg-blue-600 rounded text-white"
+                  onClick={handleReplySubmit}
+                >
+                  Kirim Balasan
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
