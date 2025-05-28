@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { Navbar } from "../components/navbar.tsx";
 import { fetchFromAPI } from "../../../backend/src/api/api.ts";
 import "../styles/post.css";
-
+import { jwtDecode } from "jwt-decode";
 
 interface PostObject {
   title: string;
@@ -30,6 +30,12 @@ interface CommentObject {
   replies?: CommentObject[];
 }
 
+interface TokenPayload {
+  userId: string;
+  iat: number;
+  exp: number;
+}
+
 interface UserObject {
   username: string;
 }
@@ -38,13 +44,62 @@ const Post: React.FC = () => {
   const { post_id } = useParams<{ post_id: string }>();
   const [post, setPost] = useState<PostObject | null>(null);
   const [comments, setComments] = useState<CommentObject[]>([]);
-
-  // Tambahan untuk comment baru
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editedContent, setEditedContent] = useState<string>("");
   const [newCommentContent, setNewCommentContent] = useState("");
 
-  // Contoh userId, sesuaikan dengan cara kamu dapatkan userId (misal dari context/auth)
-  const userId = "user-id-example"; // Ganti dengan userId yang valid
+ 
 
+
+
+  const token = localStorage.getItem("token");
+  let userId: string | null = null;
+  if (token) {
+    const decoded = jwtDecode<TokenPayload>(token);
+    userId = decoded.userId;
+    console.log("User ID dari token:", userId);
+  }
+
+
+
+
+
+  
+  const editComment = (comment_id: string) => {
+    if (!editedContent.trim()) {
+      alert("Komentar tidak boleh kosong");
+      return;
+    }
+
+    axios
+      .put(
+        `http://localhost:3000/comment/updatecomment/${comment_id}`,
+        { content: editedContent },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then(() => {
+        // Update state comments supaya kontennya berubah
+        setComments((prev) =>
+          prev.map((c) =>
+            c.comment_id === comment_id ? { ...c, content: editedContent } : c
+          )
+        );
+        setEditingCommentId(null); // keluar dari mode edit
+        alert("Komentar berhasil diubah");
+      })
+      .catch((error) => {
+        console.error("Gagal mengedit komentar:", error);
+        alert("Gagal mengedit komentar");
+      });
+  };
+
+
+
+//tampilin semua dalma isi  1 post
   useEffect(() => {
     if (!post_id) return;
     axios
@@ -56,6 +111,10 @@ const Post: React.FC = () => {
         console.error("Failed to fetch post:", error);
       });
   }, [post_id]);
+
+
+
+
 
   useEffect(() => {
     const loadComments = async () => {
@@ -72,30 +131,28 @@ const Post: React.FC = () => {
     }
   }, [post_id]);
 
-  // Fungsi submit comment baru
   const handleAddComment = async () => {
     if (!newCommentContent.trim()) {
       alert("Komentar tidak boleh kosong");
       return;
     }
     try {
-      // Kirim POST request ke API createComment
+      //
       const response = await axios.post(
         "http://localhost:3000/comment/createComment",
         {
           content: newCommentContent,
           post_id,
-          userId, // pastikan userId sesuai
-          parent_comment_id: null, // atau bisa buat reply
+
+          parent_comment_id: null,
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Jika pakai JWT token, sesuaikan
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
 
-      // Setelah berhasil, update state comments dengan komentar baru
       setComments((prev) => [...prev, response.data.comment]);
       setNewCommentContent(""); // reset input
     } catch (error) {
@@ -132,29 +189,77 @@ const Post: React.FC = () => {
           {comments.map((comment, idx) => (
             <li
               key={idx}
-              style={{ marginBottom: "1rem", borderBottom: "1px solid #ccc", paddingBottom: "0.5rem" }}
+              style={{
+                marginBottom: "1rem",
+                borderBottom: "1px solid #ccc",
+                paddingBottom: "0.5rem",
+              }}
             >
               <div>
-              <div><strong>{ comment["user.username"] || "Unknown User" }</strong></div>
+                <strong>{comment["user.username"] || "Unknown User"} </strong>
               </div>
-              <div>{comment.content}</div>
+
+              {editingCommentId === comment.comment_id ? (
+                <>
+                  <textarea
+                    rows={3}
+                    style={{ width: "100%" }}
+                    value={editedContent}
+                    onChange={(e) => setEditedContent(e.target.value)}
+                  />
+                  <button
+                    onClick={() => {
+                      editComment(comment.comment_id);
+                    }}
+                    className="save-button"
+                    style={{ marginRight: "0.5rem" }}
+                  >
+                    Simpan
+                  </button>
+                  <button
+                    onClick={() => setEditingCommentId(null)}
+                    className="cancel-button"
+                  >
+                    Batal
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div>{comment.content}</div>
+
+                  {comment.user_id === userId && (
+                    <>
+                      <button
+                        onClick={() => {
+                          setEditingCommentId(comment.comment_id);
+                          setEditedContent(comment.content);
+                        }}
+                        className="edit-button"
+                        style={{ marginRight: "0.5rem" }}
+                      >
+                        Edit
+                      </button>
+                      <button className="delete-button">Delete</button>
+                    </>
+                  )}
+                </>
+              )}
             </li>
           ))}
         </ul>
 
-<div style={{ marginTop: "1rem" }}>
-  <textarea
-    placeholder="Tulis komentar..."
-    value={newCommentContent}
-    onChange={(e) => setNewCommentContent(e.target.value)}
-    rows={4}
-    className="comment-textarea"
-  />
-  <button onClick={handleAddComment} className="comment-button">
-    Tambah Komentar
-  </button>
-</div>
-
+        <div style={{ marginTop: "1rem" }}>
+          <textarea
+            placeholder="Tulis komentar..."
+            value={newCommentContent}
+            onChange={(e) => setNewCommentContent(e.target.value)}
+            rows={4}
+            className="comment-textarea"
+          />
+          <button onClick={handleAddComment} className="comment-button">
+            Tambah Komentar
+          </button>
+        </div>
       </div>
     </div>
   );

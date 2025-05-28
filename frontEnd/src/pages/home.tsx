@@ -4,13 +4,17 @@ import "../styles/home.css";
 import { useNavigate } from "react-router";
 import { fetchFromAPI } from "../../../backend/src/api/api.ts";
 import { Navbar } from "../components/navbar.tsx";
+// import { jwtDecode } from "jwt-decode";
+
+
+
 
 interface User {
   username: string;
 }
 
 interface Posts {
-  post_id: string; // UUID biasanya string, bukan number
+  post_id: string; 
   title: string;
   content: string;
   user_id: string;
@@ -18,15 +22,28 @@ interface Posts {
   updatedAt: string;
   totalLikes: number;
   user: User;
-  likedByCurrentUser?: boolean; // Assume this is provided by the backend
+  likedByCurrentUser?: boolean; 
 }
+
+// interface TokenPayload {
+//   userId: string;
+//   iat: number;
+//   exp: number;
+// }
+
+
+
+
+
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const [posts, setPosts] = useState<Posts[]>([]);
-  const [userId, setUSerId] = useState(""); // Tambahkan state username
+  const [userId, setUserId] = useState(""); 
   const [likedPosts, setLikedPosts] = useState<{ [key: string]: boolean }>({});
   const [error, setError] = useState("");
+
+ 
 
   const handleLike = async (postId: string) => {
     const isLiked = likedPosts[postId];
@@ -80,7 +97,7 @@ const Home: React.FC = () => {
     try {
       // Fetch user data
       const userData = await fetchFromAPI("/user/getUserById", "GET");
-      setUSerId(userData.user.user_id);
+      setUserId(userData.user.user_id);
 
       // Fetch posts data
       const response = await axios.get("http://localhost:3000/post");
@@ -103,6 +120,30 @@ const Home: React.FC = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+
+
+
+
+
+
+
+//post saya
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   return (
     <div className="min-h-screen bg-black text-gray-100 transition-opacity duration-700 pt-20">

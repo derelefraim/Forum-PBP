@@ -185,4 +185,17 @@ export const getPostTitle = async (req: Request, res: Response) => {
 
 
 
-
+//get my post
+export const getMyPost = async (req: Request, res: Response) => {
+  const userId = req.body.userId; // Ambil dari 
+  try {
+    const posts = await Post.findAll({ where: { user_id: userId } });
+    if (!posts) {
+      res.status(404).json({ message: 'No posts found for this user' });
+      return;
+    }
+    res.json(posts);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching posts', error });
+  }
+}

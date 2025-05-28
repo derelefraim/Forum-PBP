@@ -7,6 +7,7 @@ export const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState(""); // Tambahkan state username
+  const [userId, setUserId] = useState(""); 
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -15,6 +16,7 @@ export const Navbar = () => {
       try {
         const data = await fetchFromAPI("/user/getUserById", "GET");
   setUsername(data.user.username); // Simpan username ke state
+  setUserId(data.user.user_id); 
 } catch (err) {
         console.error("Error fetching profile:", err);
         setError("Gagal mengambil data profile.");
@@ -50,13 +52,13 @@ export const Navbar = () => {
           <div className="hidden md:flex items-center space-x-8">
             <Link to="/home" className="text-gray-300 hover:text-white transition-colors">Home</Link>
             <Link to="/createpost" className="text-gray-300 hover:text-white transition-colors">Create Post</Link>
-            <Link to="/communities" className="text-gray-300 hover:text-white transition-colors">Communities</Link>
+            <Link to={`/post/mypost/${userId}`} className="text-gray-300 hover:text-white transition-colors">My Post</Link>
             <Link to="/community/create" className="text-gray-300 hover:text-white transition-colors">Create Community</Link>
           </div>
 
           {/* Mobile Menu Button*/}
           <div className="md:hidden">
-            {/* prev = !prev ini untuk ngeset if false maka true, if true maka false */}
+
             <button onClick={() => setMenuOpen((prev) => !prev)}
                 className="text-gray-300 focus:outline-none"
                 aria-label="Toggle Menu">
@@ -110,7 +112,7 @@ export const Navbar = () => {
               <div className="px-2 pt-2 pb-3 space-y-1">
                 <Link to={"/home"}>Home</Link>
                 <Link to={"/create"}>Create Post</Link>
-                <Link to={"/communities"}>Communities</Link>
+                <Link to={"/post/mypost"}>My Post</Link>
                 <Link to={"/community/create"}>Create Community</Link>
               </div>
             </div>

@@ -11,7 +11,6 @@ export const likePost = async (req: Request, res: Response) => {
 
     try {
         // Cek apakah user sudah menyukai post ini
-        console.log("user_id1", user_id);
         const existingLike = await Like.findOne({
             where: {
                 post_id,
@@ -109,35 +108,35 @@ export const getAllLikesForPost = async (req: Request, res: Response) => {
     }
 };
 
-// -- get status user like
-export const getUserLikeStatus = async (req: Request, res: Response) => {
-    const { post_id } = req.params;
-    const { user_id } = req.body.user_id; 
+    // -- get status user like
+    export const getUserLikeStatus = async (req: Request, res: Response) => {
+        const { post_id } = req.params;
+        const { user_id } = req.body.user_id; 
 
-    try {
-        // Cek apakah user sudah menyukai post ini
-        const existingLike = await Like.findOne({
-            where: {
-                post_id,
-                user_id,
-            },
-        });
-
-        if (existingLike) {
-            res.status(200).json({
-                message: "User sudah menyukai post ini",
-                status: true
+        try {
+            // Cek apakah user sudah menyukai post ini
+            const existingLike = await Like.findOne({
+                where: {
+                    post_id,
+                    user_id,
+                },
             });
-        } else {
-            res.status(200).json({
-                message: "User belum menyukai post ini",
-                status: false,
+
+            if (existingLike) {
+                res.status(200).json({
+                    message: "User sudah menyukai post ini",
+                    status: true
+                });
+            } else {
+                res.status(200).json({
+                    message: "User belum menyukai post ini",
+                    status: false,
+                });
+            }
+        } catch (error) {
+            res.status(500).json({
+                message: "Gagal mengambil status like",
+                error,
             });
         }
-    } catch (error) {
-        res.status(500).json({
-            message: "Gagal mengambil status like",
-            error,
-        });
     }
-}

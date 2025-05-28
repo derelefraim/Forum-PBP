@@ -4,7 +4,7 @@ import { getAllLikesForPost, likePost,unlikePost } from '../controller/like'; //
 
 const likeRouter = express.Router();
 
-likeRouter.post('/likePost/:post_id',/* authenticateJWT,*/ likePost);
+likeRouter.post('/likePost/:post_id', authenticateJWT, likePost);
 
 likeRouter.delete('/unlikePost/:post_id',/* authenticateJWT,*/ unlikePost);
 
