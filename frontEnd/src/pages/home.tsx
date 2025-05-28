@@ -14,7 +14,7 @@ interface User {
 }
 
 interface Posts {
-  post_id: string; 
+  post_id: string;
   title: string;
   content: string;
   user_id: string;
@@ -22,68 +22,59 @@ interface Posts {
   updatedAt: string;
   totalLikes: number;
   user: User;
-  likedByCurrentUser?: boolean; 
+  likedByCurrentUser?: boolean;
 }
-
-// interface TokenPayload {
-//   userId: string;
-//   iat: number;
-//   exp: number;
-// }
-
-
-
 
 
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const [posts, setPosts] = useState<Posts[]>([]);
-  const [userId, setUserId] = useState(""); 
+  const [userId, setUserId] = useState("");
   const [likedPosts, setLikedPosts] = useState<{ [key: string]: boolean }>({});
   const [error, setError] = useState("");
+  const token = localStorage.getItem("token");
 
- 
+
+
 
   const handleLike = async (postId: string) => {
-    const isLiked = likedPosts[postId];
-
+    const isLiked = posts.find((post) => post.post_id === postId)?.likedByCurrentUser || false;
     try {
       if (isLiked) {
         // Unlike the post
-        await axios.delete(`http://localhost:3000/like/unlikepost/${postId}`, {
-          data: { userId },
-        });
-
-        // Update both likedPosts and posts in a single batch
+        await axios.delete(
+          `http://localhost:3000/like/unlikePost/${postId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setLikedPosts((prev) => ({
           ...prev,
           [postId]: false,
         }));
-
         setPosts((prevPosts) =>
           prevPosts.map((post) =>
             post.post_id === postId
-              ? { ...post, totalLikes: post.totalLikes - 1 }
+              ? { ...post, totalLikes: Number(post.totalLikes) - 1, likedByCurrentUser: false }
               : post
           )
         );
       } else {
         // Like the post
-        await axios.post(`http://localhost:3000/like/likepost/${postId}`, {
-          userId,
-        });
-
-        // Update both likedPosts and posts in a single batch
+        await axios.post(
+          `http://localhost:3000/like/likepost/${postId}`,
+          { userId: userId },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
         setLikedPosts((prev) => ({
           ...prev,
           [postId]: true,
         }));
-
         setPosts((prevPosts) =>
           prevPosts.map((post) =>
             post.post_id === postId
-              ? { ...post, totalLikes: Number(post.totalLikes + 1) }
+              ? { ...post, totalLikes: Number(post.totalLikes) + 1, likedByCurrentUser: true }
               : post
           )
         );
@@ -95,7 +86,6 @@ const Home: React.FC = () => {
 
 
 
-  
   const fetchData = async () => {
     try {
       // Fetch user data
@@ -106,14 +96,30 @@ const Home: React.FC = () => {
       const response = await axios.get("http://localhost:3000/post");
       const postsData = response.data;
 
+      // Ngatur Like
       // Map liked posts for the current user
       const likedPostsMap: { [key: string]: boolean } = {};
-      postsData.forEach((post: Posts) => {
-        likedPostsMap[post.post_id] = post.likedByCurrentUser || false; // Assume `likedByCurrentUser` is provided by the backend
-      });
+      for (const post of postsData) {
+        try {
+          const res = await axios.get(
+            `http://localhost:3000/like/getUserLikeStatus/${post.post_id}`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          likedPostsMap[post.post_id] = res.data.status; // status: true/false dari backend
+        } catch (err) {
+          likedPostsMap[post.post_id] = false; // fallback jika error
+        }
+        console.log("post", post.post_id, "liked by user:", likedPostsMap[post.post_id]);
+      }
 
-      setPosts(postsData);
-      setLikedPosts(likedPostsMap);
+      const postsWithLikeStatus = postsData.map((post: Posts) => ({
+        ...post,
+        likedByCurrentUser: likedPostsMap[post.post_id] ?? false,
+      }));
+
+      setPosts(postsWithLikeStatus);
     } catch (err) {
       console.error("Error fetching data:", err);
       setError("Gagal mengambil data.");
@@ -123,6 +129,9 @@ const Home: React.FC = () => {
   useEffect(() => {
     fetchData();
   }, []);
+  useEffect(() => {
+    console.log("Posts updated:", posts);
+  }, [posts]);
 
 
 
@@ -131,12 +140,7 @@ const Home: React.FC = () => {
 
 
 
-//post saya
-
-
-
-
-
+  //post saya
 
 
 
@@ -171,12 +175,12 @@ const Home: React.FC = () => {
                 onClick={(e) => {
                   e.stopPropagation();
                   handleLike(post.post_id);
+                  console.log("Clicked");
                 }}
-                className={`mt-2 px-4 py-2 rounded ${
-                  likedPosts[post.post_id] ? "bg-red-500" : "bg-green-100"
-                } hover:bg-opacity-80 transition`}
+                className={`mt-2 px-4 py-2 rounded ${post.likedByCurrentUser ? "bg-red-500 text-white" : "bg-green-100 text-black"
+                  } hover:bg-opacity-80 transition`}
               >
-                {likedPosts[post.post_id] ? "Liked" : "Like"}
+                {post.likedByCurrentUser ? "Liked" : "Like"}
               </button>
             </div>
           ))}

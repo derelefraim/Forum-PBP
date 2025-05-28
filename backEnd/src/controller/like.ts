@@ -8,7 +8,6 @@ import { v4 as uuidv4 } from 'uuid';
 export const likePost = async (req: Request, res: Response) => {
     const { post_id } = req.params;
     const { userId: user_id } = req.body; // Ambil user_id dari body request
-
     try {
         // Cek apakah user sudah menyukai post ini
         const existingLike = await Like.findOne({
@@ -48,7 +47,7 @@ export const likePost = async (req: Request, res: Response) => {
 // -- unlike a post
 export const unlikePost = async (req: Request, res: Response) => {
     const { post_id } = req.params;
-    const { user_id } = req.body.user_id; // Ambil user_id dari body request
+    const { userId: user_id } = req.body; // Ambil user_id dari body request
 
     try {
         // Cek apakah user sudah menyukai post ini
@@ -111,8 +110,7 @@ export const getAllLikesForPost = async (req: Request, res: Response) => {
     // -- get status user like
     export const getUserLikeStatus = async (req: Request, res: Response) => {
         const { post_id } = req.params;
-        const { user_id } = req.body.user_id; 
-
+        const { userId: user_id } = req.body;
         try {
             // Cek apakah user sudah menyukai post ini
             const existingLike = await Like.findOne({
