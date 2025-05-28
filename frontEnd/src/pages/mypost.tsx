@@ -84,10 +84,6 @@ const mypost: React.FC = () => {
   };
 
 
-
-
-
-
   const deletePost = async (postId: string) => {
     const confirmDelete = window.confirm("Yakin ingin menghapus post ini?");
     if (!confirmDelete) return;
