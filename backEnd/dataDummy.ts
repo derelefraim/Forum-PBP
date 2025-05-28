@@ -128,7 +128,7 @@ async function createDummyData() {
         title: "Film dengan Mobil Ikonik",
         content: "Daftar film yang menampilkan mobil ikonik.",
         user_id: user2.user_id,
-        image_url: "https://example.com/car10.jpg",
+        image_url: "chariss.jpg",
         category: "Entertain",
       },
     ];

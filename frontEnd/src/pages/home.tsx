@@ -110,7 +110,6 @@ const Home: React.FC = () => {
         } catch (err) {
           likedPostsMap[post.post_id] = false; // fallback jika error
         }
-        console.log("post", post.post_id, "liked by user:", likedPostsMap[post.post_id]);
       }
 
       const postsWithLikeStatus = postsData.map((post: Posts) => ({
@@ -177,9 +176,9 @@ const Home: React.FC = () => {
                 <div className="body text-sm text-gray-300 mb-2">{post.content}</div>
                 {post.image_url && (
                   <img
-                    src={post.image_url}
+                    src={`http://localhost:3000/uploads/${post.image_url}`}
                     alt="Post Image"
-                    className="w-full h-auto rounded mb-2"
+                    className="post-image"  
                   />
                 )}
               </div>
@@ -225,7 +224,6 @@ const Home: React.FC = () => {
                   onClick={(e) => {
                     e.stopPropagation();
                     handleLike(post.post_id);
-                    console.log("Clicked");
                   }}
                   className={`mt-2 px-4 py-2 rounded ${
                     post.likedByCurrentUser
