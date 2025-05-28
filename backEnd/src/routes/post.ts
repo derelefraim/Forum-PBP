@@ -2,8 +2,23 @@ import express from 'express';
 import {createPost, getAllPosts, getPostById, updatePost, deletePost, getPostContent, getPostTitle, getAllVariable, getMyPost} from '../controller/post';
 import { authenticateJWT } from '../middleware/Auth'; 
 import { Post } from '../../models/post';
+import multer from 'multer';
+
 
 const postRouter = express.Router();
+
+const storage = multer.diskStorage({
+    destination: "uploads/",
+    filename: (req, file, cb) => {
+      cb(null, Date.now() + "-" + file.originalname);
+    },
+  });
+const upload = multer({ storage });
+
+
+
+
+
 
 postRouter.get('', getAllPosts); // udah
 postRouter.post('/CreatePost',authenticateJWT, createPost); // udah

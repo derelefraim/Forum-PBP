@@ -42,6 +42,7 @@ app.use('/user', userRoutes);
 app.use('/post', postRouter);
 app.use('/like', likeRouter);
 app.use('/comment', commentRouter);
+app.use('/uploads', express.static('uploads'))
 
 // Middleware error handling
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

@@ -6,12 +6,13 @@ import { fn, col } from 'sequelize';
 
 // import dayjs from 'dayjs';
 
-// -- create post
+
+
+// -- create post  image and category bagian createpost, bagian reivel
 export const createPost = async (req: any, res: any) => {
     const { title, content } = req.body;
     const user_id = req.body.user_id; 
 
-    // const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
     try {
         const post = await Post.create({
             title,
@@ -28,6 +29,9 @@ export const createPost = async (req: any, res: any) => {
         return;
     }
 }
+
+
+
 
 // -- Get all posts + its post`s username + bikin virtual column totalLikes
 export const getAllPosts = async (req: Request, res: Response) => {
@@ -65,7 +69,7 @@ export const getAllVariable = async (req: Request, res: Response) => {
   try {
     const post = await Post.findOne({
       where: { post_id: post_id },
-      attributes: ['post_id', 'title', 'content', 'user_id', 'createdAt', 'updatedAt' , [fn('COUNT', col('likes.like_id')), 'totalLikes']],
+      attributes: ['post_id', 'title', 'content', 'user_id','image_url', 'category', 'createdAt', 'updatedAt' , [fn('COUNT', col('likes.like_id')), 'totalLikes']],
       include: [
         {
         model: User,
@@ -151,7 +155,10 @@ export const deletePost = async (req: Request, res: Response) => {
   }
 }
 
-// -- get post content
+
+
+
+// -- get post content       ga kepake
 export const getPostContent = async (req: Request, res: Response) => {
   const postId = req.params.postId; // Ambil post_id dari parameter URL
   try {
@@ -168,7 +175,11 @@ export const getPostContent = async (req: Request, res: Response) => {
   }
 }
 
-// -- get post title
+
+
+
+
+// -- get post title          // ga kepake
 export const getPostTitle = async (req: Request, res: Response) => {
   const postId = req.params.postId; // Ambil post_id dari parameter URL
   try {
@@ -201,6 +212,8 @@ export const getMyPost = async (req: Request, res: Response) => {
         'title',
         'content',
         'user_id',
+        'image_url',
+        'category',
         'createdAt',
         'updatedAt',
         [fn('COUNT', col('likes.like_id')), 'totalLikes']

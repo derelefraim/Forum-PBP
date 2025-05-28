@@ -26,6 +26,25 @@ export class Post extends Model {
     })
     declare content: string;
 
+
+
+    
+    @Column({ 
+        type: DataType.STRING, 
+        allowNull: true // Allow null if the image is optional
+    })
+    declare image_url: string;
+
+    @Column({ 
+        type: DataType.ENUM("Teknis", "Entertain", "Marketplace", "General"), // Restrict values to specific options
+        allowNull: false // Make category required
+    })
+    declare category: string;
+
+
+
+
+
     @ForeignKey(() => User)
     @Column({ 
         type: DataType.UUID, 

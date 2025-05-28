@@ -17,6 +17,8 @@ const mypost: React.FC = () => {
     title: string;
     content: string;
     user_id: string;
+    image_url?: string;
+    category: string;
     createdAt: string;
     updatedAt: string;
     totalLikes: number;
@@ -188,10 +190,33 @@ const mypost: React.FC = () => {
                 onClick={() => navigate(`/post/${post.post_id}`)}
               >
                 <div className="title">{post.title}</div>
-                <div className="body">{post.content}</div>
-                <div className="footer">Posted By : {post.user.username}</div>
-                <div className="footer">Total Likes : {Number(post.totalLikes)}</div>
-                <div className="footer">Created at : {post.createdAt}</div>
+              <div className="body">{post.content}</div>
+              <div className="body">{post.image_url}</div>   
+              <div className="footer">Posted By : {post.user.username}</div>
+                <div className="footer">
+                Total Likes : {Number(post.totalLikes)} ❤️
+                </div>
+              <div className="footer">Category : {post.category}</div>
+                <div className="footer">
+                Created at : {new Date(post.createdAt).toLocaleString(undefined, {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false
+                })}
+                </div>
+                <div className="footer">
+                Updated at : {new Date(post.updatedAt).toLocaleString(undefined, {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false
+                })}
+                </div>
                 <button
   onClick={(e) => {
     e.stopPropagation(); // supaya klik tombol tidak trigger navigate

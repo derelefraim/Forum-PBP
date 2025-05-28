@@ -10,6 +10,8 @@ interface PostObject {
   title: string;
   content: string;
   user_id: number;
+  image_url: string;
+  category: string;
   createdAt: string;
   updatedAt: string;
   user: {
@@ -189,7 +191,7 @@ const Post: React.FC = () => {
           content: newCommentContent,
           post_id,
 
-          parent_comment_id: null,
+          parent_comment_id: null, 
         },
         {
           headers: {
@@ -222,11 +224,33 @@ const Post: React.FC = () => {
             {post ? (
               <>
                 <div className="title">{post.title}</div>
-                <div className="body">{post.content}</div>
-                <div className="footer">Posted by: {post.user.username}</div>
-                <div className="footer">Created at: {post.createdAt}</div>
-                <div className="footer">Updated at: {post.updatedAt}</div>
-                <div className="footer">Likes: {post.totalLikes}</div>
+              <div className="body">{post.content}</div>
+              <div className="body">{post.image_url}</div>   
+              <div className="footer">Posted By : {post.user.username}</div>
+                <div className="footer">
+                Total Likes : {Number(post.totalLikes)} ❤️
+                </div>
+              <div className="footer">Category : {post.category}</div>
+                <div className="footer">
+                Created at : {new Date(post.createdAt).toLocaleString(undefined, {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false
+                })}
+                </div>
+                <div className="footer">
+                Updated at : {new Date(post.updatedAt).toLocaleString(undefined, {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false
+                })}
+                </div>
               </>
             ) : (
               <div>Loading post...</div>

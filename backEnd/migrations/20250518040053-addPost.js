@@ -16,6 +16,19 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false
       },
+
+
+      image_url: {
+        type: Sequelize.STRING,
+        allowNull: true // 
+      },
+      category: {
+        type: Sequelize.ENUM('Teknis', 'Entertain', 'Marketplace', 'General'), 
+        allowNull: false 
+      },
+
+
+
       user_id: {
         type: Sequelize.UUID,
         allowNull: false,
