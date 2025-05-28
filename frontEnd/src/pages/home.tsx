@@ -4,7 +4,6 @@ import "../styles/home.css";
 import { useNavigate } from "react-router";
 import { fetchFromAPI } from "../../../backend/src/api/api.ts";
 import { Navbar } from "../components/navbar.tsx";
-// import { jwtDecode } from "jwt-decode";
 
 interface User {
   username: string;
@@ -24,11 +23,6 @@ interface Posts {
   likedByCurrentUser?: boolean;
 }
 
-// interface TokenPayload {
-//   userId: string;
-//   iat: number;
-//   exp: number;
-// }
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -36,10 +30,11 @@ const Home: React.FC = () => {
   const [userId, setUserId] = useState("");
   const [likedPosts, setLikedPosts] = useState<{ [key: string]: boolean }>({});
   const [error, setError] = useState("");
-  const [visibleCount, setVisibleCount] = useState(3); // Show 3 posts initially
+  const [visibleCount, setVisibleCount] = useState(3); 
   const token = localStorage.getItem("token");
 
-  const [selectedCategory, setSelectedCategory] = useState<string>(""); // State for selected category
+  const [selectedCategory, setSelectedCategory] = useState<string>(""); 
+  const [searchQuery, setSearchQuery] = useState(""); 
 
   const handleLike = async (postId: string) => {
     const isLiked = posts.find((post) => post.post_id === postId)?.likedByCurrentUser || false;
@@ -96,7 +91,6 @@ const Home: React.FC = () => {
       const postsData = response.data;
 
       // Ngatur Like
-      // Map liked posts for the current user
       const likedPostsMap: { [key: string]: boolean } = {};
       for (const post of postsData) {
         try {
@@ -106,9 +100,9 @@ const Home: React.FC = () => {
               headers: { Authorization: `Bearer ${token}` },
             }
           );
-          likedPostsMap[post.post_id] = res.data.status; // status: true/false dari backend
+          likedPostsMap[post.post_id] = res.data.status; 
         } catch (err) {
-          likedPostsMap[post.post_id] = false; // fallback jika error
+          likedPostsMap[post.post_id] = false; 
         }
       }
 
@@ -158,9 +152,23 @@ const Home: React.FC = () => {
           </select>
         </div>
 
+        {/* Search bar for post title */}
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search by title..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="px-2 py-1 rounded bg-gray-700 text-white w-full mb-2"
+          />
+        </div>
+
         {posts
           .filter((post) =>
             selectedCategory ? post.category === selectedCategory : true
+          )
+          .filter((post) =>
+            post.title.toLowerCase().includes(searchQuery.toLowerCase())
           )
           .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
           .slice(0, visibleCount)
@@ -189,7 +197,7 @@ const Home: React.FC = () => {
                   Posted By: <span className="text-white">{post.user.username}</span>
                 </div>
                 <div>
-                  Total Likes: <span className="text-red-500">{Number(post.totalLikes)} ❤️</span>
+                  <span className="text-red-500">{Number(post.totalLikes)} ❤️</span>
                 </div>
                 <div>
                   Category: <span className="text-blue-400">{post.category}</span>
