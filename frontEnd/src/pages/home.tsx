@@ -33,6 +33,7 @@ const Home: React.FC = () => {
   const [userId, setUserId] = useState("");
   const [likedPosts, setLikedPosts] = useState<{ [key: string]: boolean }>({});
   const [error, setError] = useState("");
+  const [visibleCount, setVisibleCount] = useState(3); // Show 3 posts initially
   const token = localStorage.getItem("token");
 
 
@@ -157,7 +158,8 @@ const Home: React.FC = () => {
       <Navbar />
       <div className="p-4">
         {posts
-          .sort((a, b) => b.totalLikes - a.totalLikes)
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .slice(0, visibleCount)
           .map((post) => (
             <div
               key={post.post_id}
@@ -169,8 +171,16 @@ const Home: React.FC = () => {
               <div className="footer">Posted By : {post.user.username}</div>
               <div className="footer">Total Likes : {Number(post.totalLikes)}</div>
               <div className="footer">Created at : {post.createdAt}</div>
-              <div className="footer">Updated at : {post.updatedAt}</div>
-
+              <div className="footer">
+                Updated at : {new Date(post.updatedAt).toLocaleString(undefined, {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false
+                })}
+              </div>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -184,6 +194,14 @@ const Home: React.FC = () => {
               </button>
             </div>
           ))}
+        {visibleCount < posts.length && (
+          <button
+            className="mt-4 px-4 py-2 bg-blue-600 rounded hover:bg-blue-700"
+            onClick={() => setVisibleCount(posts.length)}
+          >
+            Load More
+          </button>
+        )}
       </div>
     </div>
   );
