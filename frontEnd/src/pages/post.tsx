@@ -105,6 +105,32 @@ const Post: React.FC = () => {
 
 
 
+  const deleteComment = async (comment_id: string) => {
+    console.log("Mau hapus:", comment_id); // Debug
+
+    const confirmDelete = window.confirm("Apakah kamu yakin ingin menghapus komentar ini?");
+    if (!confirmDelete) return;
+  
+    try {
+      await axios.delete(`http://localhost:3000/comment/${comment_id}/deleteComment`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+  
+      setComments((prev) => prev.filter((c) => c.comment_id !== comment_id));
+      alert("Komentar berhasil dihapus");
+    } catch (error: any) {
+      console.error("Gagal menghapus komentar:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
+      alert("Gagal menghapus komentar");
+    }
+  };
+
+  
 
 
   
@@ -141,6 +167,15 @@ const Post: React.FC = () => {
     }
   }, [post_id]);
 
+
+
+
+
+
+
+
+
+
   const handleAddComment = async () => {
     if (!newCommentContent.trim()) {
       alert("Komentar tidak boleh kosong");
@@ -170,6 +205,13 @@ const Post: React.FC = () => {
       alert("Gagal menambahkan komentar");
     }
   };
+
+
+
+
+
+
+  
 
   return (
     <div className="postPage">
@@ -249,7 +291,13 @@ const Post: React.FC = () => {
                       >
                         Edit
                       </button>
-                      <button className="delete-button">Delete</button>
+                     <button
+  onClick={() => deleteComment(comment.comment_id)}
+  className="delete-button"
+>
+  Delete
+</button>
+
                     </>
                   )}
                 </>

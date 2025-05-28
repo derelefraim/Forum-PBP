@@ -7,5 +7,5 @@ commentRouter.get('/getComment/:post_id', getCommentsByPostId);
 commentRouter.get('/getCommentById', authenticateJWT, getCommentById); 
 commentRouter.post('/createComment', authenticateJWT, createComment); 
 commentRouter.put('/updateComment/:comment_id', authenticateJWT, updateComment); 
-commentRouter.delete('/:commentId/deleteComment', authenticateJWT, deleteComment); 
+commentRouter.delete('/:comment_id/deleteComment', authenticateJWT, deleteComment); 
 export default commentRouter;

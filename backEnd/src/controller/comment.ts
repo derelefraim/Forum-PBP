@@ -165,10 +165,14 @@ export const updateComment = async (req: Request, res: Response) => {
         return;
     }
 };
+
+
+
 // -- delete comment
 export const deleteComment = async (req: Request, res: Response) => {
+    // console.log("req.params:", req.params); //DEBUG
     const { comment_id } = req.params;
-
+    // console.log("comment_id:", comment_id); // DEBUG
     try {
         const comment = await Comment.findOne({
             where: { comment_id },
@@ -178,16 +182,19 @@ export const deleteComment = async (req: Request, res: Response) => {
             res.status(404).json({ message: "Komentar tidak ditemukan" });
             return;
         }
+        // console.log("Komentar ditemukan:", comment); // DEBUG
 
         await Comment.destroy({
             where: { comment_id },
         });
+        // console.log("Komentar berhasil dihapus"); // DEBUG
 
         res.status(200).json({
             message: "Komentar berhasil dihapus",
         });
         return;
     } catch (error) {
+        // console.error("Error saat menghapus komentar:", error); // DEBUG
         res.status(500).json({
             message: "Gagal menghapus komentar",
             error,

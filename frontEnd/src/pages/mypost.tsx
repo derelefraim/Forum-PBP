@@ -86,7 +86,25 @@ const mypost: React.FC = () => {
 
 
 
-
+  const deletePost = async (postId: string) => {
+    const confirmDelete = window.confirm("Yakin ingin menghapus post ini?");
+    if (!confirmDelete) return;
+  
+    try {
+      await axios.delete(`http://localhost:3000/post/${postId}/deletePost`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      // Update state agar UI langsung berubah tanpa reload
+      setMyPosts((prevPosts) => prevPosts.filter((post) => post.post_id !== postId));
+  
+      alert("Post berhasil dihapus");
+    } catch (error) {
+      console.error("Gagal menghapus post:", error);
+      alert("Gagal menghapus post");
+    }
+  };
+  
 
 
 
@@ -174,18 +192,27 @@ const mypost: React.FC = () => {
                 <div className="footer">Posted By : {post.user.username}</div>
                 <div className="footer">Total Likes : {Number(post.totalLikes)}</div>
                 <div className="footer">Created at : {post.createdAt}</div>
-                <div className="footer">Updated at : {post.updatedAt}</div>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setEditingPostId(post.post_id);
-                    setEditedTitle(post.title);
-                    setEditedContent(post.content);
-                  }}
-                  className="mt-2 bg-blue-200 px-3 py-1 rounded"
-                >
-                  Edit Post
-                </button>
+  onClick={(e) => {
+    e.stopPropagation(); // supaya klik tombol tidak trigger navigate
+    setEditingPostId(post.post_id);
+    setEditedTitle(post.title);
+    setEditedContent(post.content);
+  }}
+  className="mt-2 bg-blue-600 px-3 py-1 rounded"
+>
+  Edit Post
+</button>
+
+<button
+  onClick={(e) => {
+    e.stopPropagation();
+    deletePost(post.post_id);
+  }}
+  className="mt-2 bg-red-700 px-3 py-1 rounded ml-2"
+>
+  Delete Post
+</button>
               </div>
             )
           )
