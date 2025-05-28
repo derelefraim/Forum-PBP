@@ -24,17 +24,89 @@ const mypost: React.FC = () => {
     likedByCurrentUser?: boolean;
   }
 
-  const userId = useParams<{ userId: string }>().userId;
-  console.log("User ID from URL:", userId);
   const [myPosts, setMyPosts] = useState<Posts[]>([]);
-
+  const [editingPostId, setEditingPostId] = useState<string | null>(null);
+  const [editedTitle, setEditedTitle] = useState<string>("");
+  const [editedContent, setEditedContent] = useState<string>("");
+  
+  
+  
+  const userId = useParams<{ userId: string }>().userId;
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  
+  console.log("User ID from URL:", userId);
+
+
+
+
+
+
+
+
+  const savePostEdit = async (postId: string) => {
+    if (!editedTitle.trim() || !editedContent.trim()) {
+      alert("Title dan content tidak boleh kosong");
+      return;
+    }
+
+    try {
+      await axios.put(
+        `http://localhost:3000/post/${postId}/updatePost`,
+        { title: editedTitle, content: editedContent },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      alert("Post berhasil diupdate");
+
+      setMyPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.post_id === postId
+            ? { ...post, title: editedTitle, content: editedContent, updatedAt: new Date().toISOString() }
+            : post
+        )
+      );
+     
+      setEditingPostId(null);
+      setEditedTitle("");
+      setEditedContent("");
+
+      
+    }catch (error: any) {
+        console.error("Gagal mengupdate post:", error.response?.data || error.message || error);
+        alert("Gagal mengupdate post");
+      
+      
+    }
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   useEffect(() => {
     axios
       .get(`http://localhost:3000/post/mypost/${userId}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${token}`,
         },
       })
       .then((response) => {
@@ -45,6 +117,8 @@ const mypost: React.FC = () => {
         console.error("Error fetching posts:", error);
       });
   }, [userId]);
+
+
 
   return (
     <div className="min-h-screen bg-black text-gray-100 transition-opacity duration-700 pt-20">
@@ -59,25 +133,65 @@ const mypost: React.FC = () => {
 
       <div className="p-4">
         {myPosts.length > 0 ? (
-          myPosts
-            .sort((a: Posts, b: Posts) => b.totalLikes - a.totalLikes)
-            .map((post: Posts) => (
+        myPosts
+          .sort((a, b) => b.totalLikes - a.totalLikes)
+          .map((post) =>
+            editingPostId === post.post_id ? (
+              <div key={post.post_id} className="post mb-4 p-4 bg-gray-800 rounded-lg">
+                <input
+                  type="text"
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                  className="w-full mb-2 p-2 rounded"
+                />
+                <textarea
+                  value={editedContent}
+                  onChange={(e) => setEditedContent(e.target.value)}
+                  rows={4}
+                  className="w-full mb-2 p-2 rounded"
+                />
+                <button
+                  onClick={() => savePostEdit(post.post_id)}
+                  className="mr-2 bg-green-600 px-3 py-1 rounded"
+                >
+                  Simpan
+                </button>
+                <button
+                  onClick={() => setEditingPostId(null)}
+                  className="bg-red-600 px-3 py-1 rounded"
+                >
+                  Batal
+                </button>
+              </div>
+            ) : (
               <div
                 key={post.post_id}
                 className="post mb-4 p-4 bg-gray-800 rounded-lg cursor-pointer"
                 onClick={() => navigate(`/post/${post.post_id}`)}
               >
-            <div className="title">{post.title}</div>
-              <div className="body">{post.content}</div>
-              <div className="footer">Posted By : {post.user.username}</div>
-              <div className="footer">Total Likes : {Number(post.totalLikes)}</div>
-              <div className="footer">Created at : {post.createdAt}</div>
-              <div className="footer">Updated at : {post.updatedAt}</div>
+                <div className="title">{post.title}</div>
+                <div className="body">{post.content}</div>
+                <div className="footer">Posted By : {post.user.username}</div>
+                <div className="footer">Total Likes : {Number(post.totalLikes)}</div>
+                <div className="footer">Created at : {post.createdAt}</div>
+                <div className="footer">Updated at : {post.updatedAt}</div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingPostId(post.post_id);
+                    setEditedTitle(post.title);
+                    setEditedContent(post.content);
+                  }}
+                  className="mt-2 bg-blue-200 px-3 py-1 rounded"
+                >
+                  Edit Post
+                </button>
               </div>
-            ))
-        ) : (
-          <p className="text-center text-gray-400">No posts found.</p>
-        )}
+            )
+          )
+      ) : (
+        <p className="text-center text-gray-400">No posts found.</p>
+      )}
       </div>
     </div>
   );

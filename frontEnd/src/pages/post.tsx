@@ -64,7 +64,7 @@ const Post: React.FC = () => {
 
 
 
-  
+
   const editComment = (comment_id: string) => {
     if (!editedContent.trim()) {
       alert("Komentar tidak boleh kosong");
@@ -98,6 +98,16 @@ const Post: React.FC = () => {
   };
 
 
+
+
+
+
+
+
+
+
+
+  
 
 //tampilin semua dalma isi  1 post
   useEffect(() => {
