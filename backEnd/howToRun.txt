@@ -3,3 +3,4 @@
 3. npx sequelize db:migrate (jalanin migration)
 4. npx tsc dataDummy.ts (buat masukin data dummy ke database)
 5. npx tsc ./src/app.ts (run backend"")
+6. npm install multer

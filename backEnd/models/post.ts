@@ -26,9 +26,6 @@ export class Post extends Model {
     })
     declare content: string;
 
-
-
-    
     @Column({ 
         type: DataType.STRING, 
         allowNull: true // Allow null if the image is optional
