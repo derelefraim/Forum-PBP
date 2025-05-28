@@ -5,10 +5,11 @@ import CreatePost from "./pages/createPost";
 import Register from "./pages/register";
 import Profile from "./pages/profile";
 import EditProfile from "./pages/editProfile";
+import MyPost from "./pages/mypost";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 
-const app = () => {
+const App = () => {
   return (
     <Router>
       <Routes>
@@ -20,9 +21,10 @@ const app = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/post/mypost/:userId" element={<MyPost />} />
       </Routes>
     </Router>
   );
 };
 
-export default app;
+export default App;

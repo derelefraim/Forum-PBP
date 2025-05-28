@@ -112,7 +112,7 @@ export const Navbar = () => {
               <div className="px-2 pt-2 pb-3 space-y-1">
                 <Link to={"/home"}>Home</Link>
                 <Link to={"/create"}>Create Post</Link>
-                <Link to={"/post/mypost"}>My Post</Link>
+                <Link to={`/post/mypost/${userId}`}>My Post</Link>
                 <Link to={"/community/create"}>Create Community</Link>
               </div>
             </div>

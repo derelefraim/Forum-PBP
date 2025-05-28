@@ -127,6 +127,9 @@ export const updatePost = async (req: Request, res: Response) => {
     return;
   }
 }
+
+
+
 // -- Delete post
 export const deletePost = async (req: Request, res: Response) => {
   const postId = req.params.postId; 
@@ -186,16 +189,41 @@ export const getPostTitle = async (req: Request, res: Response) => {
 
 
 //get my post
+
 export const getMyPost = async (req: Request, res: Response) => {
-  const userId = req.body.userId; // Ambil dari 
+  const userId = req.params.userId;
+
   try {
-    const posts = await Post.findAll({ where: { user_id: userId } });
-    if (!posts) {
-      res.status(404).json({ message: 'No posts found for this user' });
-      return;
-    }
+    const posts = await Post.findAll({
+      where: { user_id: userId },
+      attributes: [
+        'post_id',
+        'title',
+        'content',
+        'user_id',
+        'createdAt',
+        'updatedAt',
+        [fn('COUNT', col('likes.like_id')), 'totalLikes']
+      ],
+      include: [
+        {
+          model: User,
+          attributes: ['username']
+        },
+        {
+          model: Like,
+          attributes: []
+        }
+      ],
+      group: ['Post.post_id', 'user.user_id']
+    });
+
+    
+
     res.json(posts);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: 'Error fetching posts', error });
   }
-}
+};
+

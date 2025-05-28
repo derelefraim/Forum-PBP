@@ -1,5 +1,5 @@
 import express from 'express';
-import {createPost, getAllPosts, getPostById, updatePost, deletePost, getPostContent, getPostTitle, getAllVariable} from '../controller/post';
+import {createPost, getAllPosts, getPostById, updatePost, deletePost, getPostContent, getPostTitle, getAllVariable, getMyPost} from '../controller/post';
 import { authenticateJWT } from '../middleware/Auth'; 
 import { Post } from '../../models/post';
 
@@ -14,6 +14,8 @@ postRouter.get('/:postId/getPostContent', getPostContent); // udah
 postRouter.get('/:postId/getPostTitle', getPostTitle); // udah
 postRouter.get('/:post_id/getAllVariable', getAllVariable); // baru
 
+
+postRouter.get('/mypost/:userId', authenticateJWT, getMyPost);
 
 export default postRouter;
 
