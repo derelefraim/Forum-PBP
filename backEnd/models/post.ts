@@ -1,5 +1,5 @@
 // models/post.model.ts
-import { Table, Model, Column, DataType, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
+import { Table, Model, Column, DataType, ForeignKey, BelongsTo, HasMany, AllowNull } from 'sequelize-typescript';
 import { User } from './user';
 import { Like } from './like';
 import { Comment } from './comment';
