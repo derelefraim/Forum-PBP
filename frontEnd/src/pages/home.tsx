@@ -6,7 +6,6 @@ import { fetchFromAPI } from "../../../backend/src/api/api.ts";
 import { Navbar } from "../components/navbar.tsx";
 // import { jwtDecode } from "jwt-decode";
 
-
 interface User {
   username: string;
 }
@@ -20,9 +19,9 @@ interface Posts {
   updatedAt: string;
   totalLikes: number;
   user: User;
-  image_url ?: string;
-  category : string;
-  likedByCurrentUser?: boolean; 
+  image_url?: string;
+  category: string;
+  likedByCurrentUser?: boolean;
 }
 
 // interface TokenPayload {
@@ -30,11 +29,6 @@ interface Posts {
 //   iat: number;
 //   exp: number;
 // }
-
-
-
-
-
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -44,8 +38,6 @@ const Home: React.FC = () => {
   const [error, setError] = useState("");
   const [visibleCount, setVisibleCount] = useState(3); // Show 3 posts initially
   const token = localStorage.getItem("token");
-
-
 
   const [selectedCategory, setSelectedCategory] = useState<string>(""); // State for selected category
 
@@ -95,9 +87,6 @@ const Home: React.FC = () => {
     }
   };
 
-
-
-  
   const fetchData = async () => {
     try {
       const userData = await fetchFromAPI("/user/getUserById", "GET");
@@ -154,7 +143,7 @@ const Home: React.FC = () => {
         {/* Dropdown for sorting by category */}
         <div className="mb-4">
           <label htmlFor="category" className="mr-2" style={{ color: "white" }}>
-            Sort by Category:
+            Filter by Category:
           </label>
           <select
             id="category"
@@ -197,37 +186,56 @@ const Home: React.FC = () => {
 
               {/* Right Section: Footer Information */}
               <div className="footer text-sm text-gray-400 ml-4 flex flex-col items-end">
-                <div>Posted By: <span className="text-white">{post.user.username}</span></div>
-                <div>Total Likes: <span className="text-red-500">{Number(post.totalLikes)} ❤️</span></div>
-                <div>Category: <span className="text-blue-400">{post.category}</span></div>
-                <div>Created At: <span className="text-green-400">{new Date(post.createdAt).toLocaleString(undefined, {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false
-                })}</span></div>
-                <div>Updated At: <span className="text-yellow-400">{new Date(post.updatedAt).toLocaleString(undefined, {
-                  year: "numeric",
-                  month: "2-digit",
-                  day: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: false
-                })}
-              </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleLike(post.post_id);
-                  console.log("Clicked");
-                }}
-                className={`mt-2 px-4 py-2 rounded ${post.likedByCurrentUser ? "bg-red-500 text-white" : "bg-green-100 text-black"
+                <div>
+                  Posted By: <span className="text-white">{post.user.username}</span>
+                </div>
+                <div>
+                  Total Likes: <span className="text-red-500">{Number(post.totalLikes)} ❤️</span>
+                </div>
+                <div>
+                  Category: <span className="text-blue-400">{post.category}</span>
+                </div>
+                <div>
+                  Created At:{" "}
+                  <span className="text-green-400">
+                    {new Date(post.createdAt).toLocaleString(undefined, {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
+                    })}
+                  </span>
+                </div>
+                <div>
+                  Updated At:{" "}
+                  <span className="text-yellow-400">
+                    {new Date(post.updatedAt).toLocaleString(undefined, {
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
+                    })}
+                  </span>
+                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleLike(post.post_id);
+                    console.log("Clicked");
+                  }}
+                  className={`mt-2 px-4 py-2 rounded ${
+                    post.likedByCurrentUser
+                      ? "bg-red-500 text-white"
+                      : "bg-green-100 text-black"
                   } hover:bg-opacity-80 transition`}
-              >
-                {post.likedByCurrentUser ? "Liked" : "Like"}
-              </button>
+                >
+                  {post.likedByCurrentUser ? "Liked" : "Like"}
+                </button>
+              </div>
             </div>
           ))}
         {visibleCount < posts.length && (
