@@ -187,7 +187,13 @@ const mypost: React.FC = () => {
               >
                 <div className="title">{post.title}</div>
               <div className="body">{post.content}</div>
-              <div className="body">{post.image_url}</div>   
+              {post.image_url && (
+                  <img
+                    src={`http://localhost:3000/uploads/${post.image_url}`}
+                    alt="Post Image"
+                    className="post-image"
+                  />
+                )}
               <div className="footer">Posted By : {post.user.username}</div>
                 <div className="footer">
                 Total Likes : {Number(post.totalLikes)} ❤️
