@@ -1,116 +1,80 @@
 import { User } from "../../models/user"; 
 import { v4 as uuidv4 } from 'uuid';
 import { generateToken } from '../utils/jwt_helper';
+import { controllerWrapper } from '../utils/controllerWrapper';
 
 
 const SECRET_KEY = 'RAHASIA123';
 // -- POST Login
-export const login = async (req: any, res: any) => {
+export const login = controllerWrapper(async (req: any, res: any) => {
     const { email, password } = req.body;
-
-    try {
-
-        const user = await User.findOne({ where: { email } });
-
-        if (!user) {
-            res.status(401).json({ message: "Email tidak ditemukan" });
-            return;
-        }
-
-        if (user.password !== password) {
-            res.status(401).json({ message: "Password salah" });
-            return;
-        }
-
-        const token = generateToken(user.user_id)
-
-        res.status(200).json({ message: "berhasil login", token });
-        return;
-    } catch (error) {
-        res.status(500).json({ message: "Terjadi kesalahan", error });
-        return;
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+        res.status(401);
+        return { message: "Email tidak ditemukan" };
     }
-}
+    if (user.password !== password) {
+        res.status(401);
+        return { message: "Password salah" };
+    }
+    const token = generateToken(user.user_id)
+    return { message: "berhasil login", token };
+});
+
 // -- POST Register
-export const register = async (req: any, res: any) => {
+export const register = controllerWrapper(async (req: any, res: any) => {
     const { username, email, password } = req.body;
     const userId = uuidv4();
-    try {
-        const user = await User.create({
-            userId,    
-            username,
-            email,
-            password,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        });
-
-        res.status(201).json({ success: true });
-    } catch (error) {
-        res.status(500).json({ message: "Terjadi kesalahan", error });
-    }
-}
+    await User.create({
+        userId,    
+        username,
+        email,
+        password,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    });
+    res.status(201);
+    return { success: true };
+});
 
 //GET all user --
-export const getAllUser = async (req: any, res: any) => {
-    try {
-        const users = await User.findAll();
-        res.status(200).json({ success: true, users });
-    } catch (error) {
-        res.status(500).json({ message: "Terjadi kesalahan", error });
-    }
-}
+export const getAllUser = controllerWrapper(async (req: any, res: any) => {
+    const users = await User.findAll();
+    return { success: true, users };
+});
 
 
 // -- GET User by ID
-export const getUserById = async (req: any, res: any) => {
-    const userId = req.body.userId; // Ambil dari hasil decode JWT
-    try {
-        const user = await User.findOne({ where: { user_id: userId } });
-        if (!user) {
-            res.status(404).json({ message: "User tidak ditemukan" });
-            return;
-        }
-        res.status(200).json({ success: true, user });
-    } catch (error) {
-        res.status(500).json({ message: "Terjadi kesalahan", error });
+export const getUserById = controllerWrapper(async (req: any, res: any) => {
+    const userId = req.body.userId;
+    const user = await User.findOne({ where: { user_id: userId } });
+    if (!user) {
+        res.status(404);
+        return { message: "User tidak ditemukan" };
     }
-}
+    return { success: true, user };
+});
 
 // -- Update user
-export const updateUser = async (req: any, res: any) => {
-    const userId = req.params.user_id; // Ambil user_id dari parameter URL
-    console.log("user_id param:", req.params.user_id);
+export const updateUser = controllerWrapper(async (req: any, res: any) => {
+    const userId = req.params.user_id;
     const { username, email, password } = req.body;
-
-    try {
-        const user = await User.findOne({ where: { user_id: userId } });
-        if (!user) {
-            res.status(404).json({ message: "User tidak ditemukan" });
-            return;
-        }
-
-       await User.update(
-            { username, email, password },
-            { where: { user_id: userId } }
-            );
-
-        res.status(200).json({ success: true });
-    } catch (error) {
-        res.status(500).json({ message: "Terjadi kesalahan", error });
-        console.log(error);
+    const user = await User.findOne({ where: { user_id: userId } });
+    if (!user) {
+        res.status(404);
+        return { message: "User tidak ditemukan" };
     }
-}
+    await User.update(
+        { username, email, password },
+        { where: { user_id: userId } }
+    );
+    return { success: true };
+});
 
 // -- logout    
-export const logout = async (req: any, res: any) => {
-    try {
-        // Hapus token dari client-side
-        res.status(200).json({ message: "Berhasil logout" });
-    } catch (error) {
-        res.status(500).json({ message: "Terjadi kesalahan", error });
-    }
-}
+export const logout = controllerWrapper(async (req: any, res: any) => {
+    return { message: "Berhasil logout" };
+});
 
 
 
