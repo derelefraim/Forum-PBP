@@ -25,16 +25,17 @@ const LoginPage: React.FC = () => {
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
+    setError(""); // Reset error
     try {
       const response = await fetchFromAPI('/user/login', 'POST', { email, password });
-      const token = response.token;
-      // const user_id = response.user_id; // Assuming the response contains user_id
-      localStorage.setItem('token', token); 
-      // localStorage.setItem('user_id', user_id); // Store user_id in local storage
-      navigate('/profile'); 
-      navigate('/home'); 
+      if (response && response.token) {
+        localStorage.setItem('token', response.token); 
+        navigate('/profile'); 
+      } else {
+        setError('Login gagal. Email atau password salah.');
+      }
     } catch (error) {
-      setError('Login failed. Please check your credentials.');
+      setError('Login gagal. Email atau password salah.');
     }
   };
 

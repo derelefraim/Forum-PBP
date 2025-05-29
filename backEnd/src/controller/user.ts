@@ -57,7 +57,7 @@ export const getUserById = controllerWrapper(async (req: any, res: any) => {
 
 // -- Update user
 export const updateUser = controllerWrapper(async (req: any, res: any) => {
-    const userId = req.params.user_id;
+    const userId = req.body.userId;
     const { username, email, password } = req.body;
     const user = await User.findOne({ where: { user_id: userId } });
     if (!user) {

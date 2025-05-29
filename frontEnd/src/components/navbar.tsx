@@ -14,7 +14,7 @@ export const Navbar = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await fetchFromAPI("/user/getUserById", "GET");
+        const data = await fetchFromAPI("/user/getCurrentUser", "GET");
   setUsername(data.user.username); // Simpan username ke state
   setUserId(data.user.user_id); 
 } catch (err) {
