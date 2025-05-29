@@ -1,11 +1,10 @@
 import { Like } from "../../models/like"; 
 import { Request, Response } from "express";
 import { v4 as uuidv4 } from 'uuid';
-
-
+import { controllerWrapper } from '../utils/controllerWrapper';
 
 // -- like a post
-export const likePost = async (req: Request, res: Response) => {
+export const likePost = controllerWrapper(async (req: Request, res: Response) => {
     const { post_id } = req.params;
     const { userId: user_id } = req.body; // Ambil user_id dari body request
     try {
@@ -19,10 +18,8 @@ export const likePost = async (req: Request, res: Response) => {
         
         console.log("user_id2", user_id);
         if (existingLike) {
-            res.status(400).json({
-                message: "User sudah menyukai post ini",
-            });
-            return;
+            res.status(400);
+            return { message: "User sudah menyukai post ini" };
         }
         console.log("user_id3", user_id);
         // Buat like baru
@@ -32,20 +29,18 @@ export const likePost = async (req: Request, res: Response) => {
             user_id,
         });
 
-        res.status(201).json({
-            message: "Post berhasil disukai",
-            like: newLike,
-        });
+        res.status(201);
+        return { message: "Post berhasil disukai", like: newLike };
     } catch (error) {
         res.status(500).json({
             message: "Gagal menyukai post",
             error,
         });
     }
-};
+});
 
 // -- unlike a post
-export const unlikePost = async (req: Request, res: Response) => {
+export const unlikePost = controllerWrapper(async (req: Request, res: Response) => {
     const { post_id } = req.params;
     const { userId: user_id } = req.body; // Ambil user_id dari body request
 
@@ -59,10 +54,8 @@ export const unlikePost = async (req: Request, res: Response) => {
         });
 
         if (!existingLike) {
-            res.status(400).json({
-                message: "User belum menyukai post ini",
-            });
-            return;
+            res.status(400);
+            return { message: "User belum menyukai post ini" };
         }
 
         // Hapus like
@@ -73,19 +66,17 @@ export const unlikePost = async (req: Request, res: Response) => {
             },
         });
 
-        res.status(200).json({
-            message: "Post berhasil diunlike",
-        });
+        return { message: "Post berhasil diunlike" };
     } catch (error) {
         res.status(500).json({
             message: "Gagal mengunlike post",
             error,
         });
     }
-};
+});
 
 // -- get all likes for a post
-export const getAllLikesForPost = async (req: Request, res: Response) => {
+export const getAllLikesForPost = controllerWrapper(async (req: Request, res: Response) => {
     const { post_id } = req.params;
     
     try {
@@ -95,20 +86,17 @@ export const getAllLikesForPost = async (req: Request, res: Response) => {
             },
         });
 
-        res.status(200).json({
-            message: "Berhasil mengambil semua like untuk post ini",
-            likes,
-        });
+        return { message: "Berhasil mengambil semua like untuk post ini", likes };
     } catch (error) {
         res.status(500).json({
             message: "Gagal mengambil semua like untuk post ini",
             error,
         });
     }
-};
+});
 
     // -- get status user like
-    export const getUserLikeStatus = async (req: Request, res: Response) => {
+    export const getUserLikeStatus = controllerWrapper(async (req: Request, res: Response) => {
         const { post_id } = req.params;
         const { userId: user_id } = req.body;
         try {
@@ -121,15 +109,9 @@ export const getAllLikesForPost = async (req: Request, res: Response) => {
             });
 
             if (existingLike) {
-                res.status(200).json({
-                    message: "User sudah menyukai post ini",
-                    status: true
-                });
+                return { message: "User sudah menyukai post ini", status: true };
             } else {
-                res.status(200).json({
-                    message: "User belum menyukai post ini",
-                    status: false,
-                });
+                return { message: "User belum menyukai post ini", status: false };
             }
         } catch (error) {
             res.status(500).json({
@@ -137,4 +119,4 @@ export const getAllLikesForPost = async (req: Request, res: Response) => {
                 error,
             });
         }
-    }
+    });

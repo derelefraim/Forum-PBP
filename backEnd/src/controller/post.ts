@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { User } from "../../models/user";
 import { Like } from "../../models/like";
 import { fn, col } from 'sequelize';
+import { controllerWrapper } from '../utils/controllerWrapper';
 
 // import dayjs from 'dayjs';
 
@@ -34,209 +35,152 @@ export const createPost = async (req: any, res: any) => {
 
 
 // -- Get all posts + its post`s username + bikin virtual column totalLikes
-export const getAllPosts = async (req: Request, res: Response) => {
-  try {
-    const posts = await Post.findAll({
-      include: [
-        {
-          model: User,
-          attributes: ['username']
-        },
-        {
-          model: Like,
-          attributes: []
-        }
-      ],
-
-      attributes: {
-        include: [
-          [fn('COUNT', col('likes.like_id')), 'totalLikes']
-        ]
+export const getAllPosts = controllerWrapper(async (req: Request, res: Response) => {
+  const posts = await Post.findAll({
+    include: [
+      {
+        model: User,
+        attributes: ['username']
       },
+      {
+        model: Like,
+        attributes: []
+      }
+    ],
 
-      group: ['Post.post_id', 'user.user_id'] 
-    });
-    res.json(posts);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching posts', error });
-  }
-};
+    attributes: {
+      include: [
+        [fn('COUNT', col('likes.like_id')), 'totalLikes']
+      ]
+    },
+
+    group: ['Post.post_id', 'user.user_id'] 
+  });
+  return posts;
+});
 
 
 //get all variable from a post by postId
-export const getAllVariable = async (req: Request, res: Response) => {
+export const getAllVariable = controllerWrapper(async (req: Request, res: Response) => {
   const post_id = req.params.post_id;  // dari route :post_id
-  try {
-    const post = await Post.findOne({
-      where: { post_id: post_id },
-      attributes: ['post_id', 'title', 'content', 'user_id','image_url', 'category', 'createdAt', 'updatedAt' , [fn('COUNT', col('likes.like_id')), 'totalLikes']],
-      include: [
-        {
+  const post = await Post.findOne({
+    where: { post_id: post_id },
+    attributes: ['post_id', 'title', 'content', 'user_id','image_url', 'category', 'createdAt', 'updatedAt' , [fn('COUNT', col('likes.like_id')), 'totalLikes']],
+    include: [
+      {
         model: User,
-        attributes: ['username'], 
-       },
-       { 
+        attributes: ['username'],
+      },
+      {
         model: Like,
         attributes: []
-       }
+      }
     ],
     group: ['Post.post_id', 'user.user_id']
-    });
-    res.json(post);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
-  }
-};
+  });
+  return post;
+});
 
 
 // -- Get post by UserId
-export const getPostById = async (req: Request, res: Response) => {
+export const getPostById = controllerWrapper(async (req: Request, res: Response) => {
   const userId = req.body.userId; 
-  try {
-    const post = await Post.findOne({ where: { user_id: userId } });
-    if (!post) {
-      res.status(404).json({ message: 'Post not found' });
-      return;
-    }
-    res.json(post);
-    return;
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching post', error: error });
-    return;
+  const post = await Post.findOne({ where: { user_id: userId } });
+  if (!post) {
+    res.status(404);
+    return { message: 'Post not found' };
   }
-};
+  return post;
+});
 
 
 // -- Update post
-export const updatePost = async (req: Request, res: Response) => {
+export const updatePost = controllerWrapper(async (req: Request, res: Response) => {
   const postId = req.params.postId; // Ambil post_id dari parameter URL
   const { title, content } = req.body;
-
-  try {
-    const post = await Post.findOne({ where: { post_id: postId } });
-    if (!post) {
-      res.status(404).json({ message: 'Post not found' });
-      return;
-    }
-
-    post.title = title;
-    post.content = content;
-    await post.save();
-
-    res.json(post);
-    return;
-  } catch (error) {
-    res.status(500).json({ message: 'Error updating post', error: error });
-    return;
+  const post = await Post.findOne({ where: { post_id: postId } });
+  if (!post) {
+    res.status(404);
+    return { message: 'Post not found' };
   }
-}
-
+  post.title = title;
+  post.content = content;
+  await post.save();
+  return post;
+});
 
 
 // -- Delete post
-export const deletePost = async (req: Request, res: Response) => {
+export const deletePost = controllerWrapper(async (req: Request, res: Response) => {
   const postId = req.params.postId; 
 
-  try {
-    const post = await Post.findOne({ where: { post_id: postId } });
-    if (!post) {
-      res.status(404).json({ message: 'Post not found' });
-      return;
-    }
-
-    await post.destroy();
-
-    res.json({ message: 'Post deleted successfully' });
-    return;
-  } catch (error) {
-    res.status(500).json({ message: 'Error deleting post', error: error });
-    return;
+  const post = await Post.findOne({ where: { post_id: postId } });
+  if (!post) {
+    res.status(404);
+    return { message: 'Post not found' };
   }
-}
 
+  await post.destroy();
+  return { message: 'Post deleted successfully' };
+});
 
 
 
 // -- get post content       ga kepake
-export const getPostContent = async (req: Request, res: Response) => {
+export const getPostContent = controllerWrapper(async (req: Request, res: Response) => {
   const postId = req.params.postId; // Ambil post_id dari parameter URL
-  try {
-    const post = await Post.findOne({ where: { post_id: postId } });
-    if (!post) {
-      res.status(404).json({ message: 'Post not found' });
-      return;
-    }
-    res.json(post.content);
-    return;
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching post content', error: error });
-    return;
+  const post = await Post.findOne({ where: { post_id: postId } });
+  if (!post) {
+    res.status(404);
+    return { message: 'Post not found' };
   }
-}
-
-
+  return { content: post.content };
+});
 
 
 
 // -- get post title          // ga kepake
-export const getPostTitle = async (req: Request, res: Response) => {
+export const getPostTitle = controllerWrapper(async (req: Request, res: Response) => {
   const postId = req.params.postId; // Ambil post_id dari parameter URL
-  try {
-    const post = await Post.findOne({ where: { post_id: postId } });
-    if (!post) {
-      res.status(404).json({ message: 'Post not found' });
-      return;
-    }
-    res.json(post.title);
-    return;
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching post title', error: error });
-    return;
+  const post = await Post.findOne({ where: { post_id: postId } });
+  if (!post) {
+    res.status(404);
+    return { message: 'Post not found' };
   }
-}
-
+  return { title: post.title };
+});
 
 
 
 //get my post
 
-export const getMyPost = async (req: Request, res: Response) => {
+export const getMyPost = controllerWrapper(async (req: Request, res: Response) => {
   const userId = req.params.userId;
-
-  try {
-    const posts = await Post.findAll({
-      where: { user_id: userId },
-      attributes: [
-        'post_id',
-        'title',
-        'content',
-        'user_id',
-        'image_url',
-        'category',
-        'createdAt',
-        'updatedAt',
-        [fn('COUNT', col('likes.like_id')), 'totalLikes']
-      ],
-      include: [
-        {
-          model: User,
-          attributes: ['username']
-        },
-        {
-          model: Like,
-          attributes: []
-        }
-      ],
-      group: ['Post.post_id', 'user.user_id']
-    });
-
-    
-
-    res.json(posts);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error fetching posts', error });
-  }
-};
+  const posts = await Post.findAll({
+    where: { user_id: userId },
+    attributes: [
+      'post_id',
+      'title',
+      'content',
+      'user_id',
+      'image_url',
+      'category',
+      'createdAt',
+      'updatedAt',
+      [fn('COUNT', col('likes.like_id')), 'totalLikes']
+    ],
+    include: [
+      {
+        model: User,
+        attributes: ['username']
+      },
+      {
+        model: Like,
+        attributes: []
+      }
+    ],
+    group: ['Post.post_id', 'user.user_id']
+  });
+  return posts;
+});
 

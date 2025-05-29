@@ -18,7 +18,7 @@ const ProfilePage: React.FC = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const data = await fetchFromAPI("/user/getUserById", "GET");
+        const data = await fetchFromAPI("/user/getCurrentUser", "GET");
         setProfile(data.user || data);
         console.log("Profile data:", data);
       } catch (err) {
@@ -37,7 +37,6 @@ const ProfilePage: React.FC = () => {
         {error && <p className="profile-error">{error}</p>}
         {profile ? (
           <div className="profile-info">
-            <p className="profile-info"><strong>User ID :</strong> {profile.user_id}</p>
             <p className="profile-info"><strong>Username:</strong> {profile.username}</p>
             <p className="profile-info"><strong>Email :</strong> {profile.email}</p>
           </div>

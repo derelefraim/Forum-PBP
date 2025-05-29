@@ -84,7 +84,7 @@ const Home: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const userData = await fetchFromAPI("/user/getUserById", "GET");
+      const userData = await fetchFromAPI("/user/getCurrentUser", "GET");
       setUserId(userData.user.user_id);
 
       const response = await axios.get("http://localhost:3000/post");

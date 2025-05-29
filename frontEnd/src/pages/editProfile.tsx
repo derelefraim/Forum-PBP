@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useRef } from "react";
-import { fetchFromAPI } from "../../../backend/src/api/api.ts";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../styles/profile.css";
-
 
 interface UserProfile {
   user_id: string;
@@ -15,18 +14,24 @@ const EditProfilePage: React.FC = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const data = await fetchFromAPI("/user/getUserById", "GET");
+        const response = await axios.get("http://localhost:3000/user/getCurrentUser", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = response.data;
         setProfile(data.user || data);
       } catch (err) {
         setError("Gagal mengambil data profile.");
       }
     };
     fetchProfile();
-  }, []);
+  }, [token]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,11 +48,19 @@ const EditProfilePage: React.FC = () => {
     const password = passwordInput?.value || "";
 
     try {
-      await fetchFromAPI(`/user/update/${profile?.user_id}`, "PUT", {
-        username,
-        email,
-        ...(password && { password }),
-      });
+      await axios.put(
+        "/user/update",
+        {
+          username,
+          email,
+          ...(password && { password }),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setSuccess("Profile updated successfully!");
       setTimeout(() => navigate("/home"), 2000);
     } catch (err) {
