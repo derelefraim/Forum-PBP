@@ -75,13 +75,3 @@ export const updateUser = controllerWrapper(async (req: any, res: any) => {
 export const logout = controllerWrapper(async (req: any, res: any) => {
     return { message: "Berhasil logout" };
 });
-
-
-
-
-
-
-
-
-
-

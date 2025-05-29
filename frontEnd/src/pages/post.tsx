@@ -128,6 +128,8 @@ const Post: React.FC = () => {
     }
   };
 
+
+
   const editComment = (comment_id: string) => {
     if (!editedContent.trim()) {
       alert("Komentar tidak boleh kosong");
@@ -145,12 +147,13 @@ const Post: React.FC = () => {
         }
       )
       .then(() => {
+        // Update state comments supaya kontennya berubah
         setComments((prev) =>
           prev.map((c) =>
             c.comment_id === comment_id ? { ...c, content: editedContent } : c
           )
         );
-        setEditingCommentId(null);
+        setEditingCommentId(null); // keluar dari mode edit
         alert("Komentar berhasil diubah");
       })
       .catch((error) => {
@@ -158,6 +161,9 @@ const Post: React.FC = () => {
         alert("Gagal mengedit komentar");
       });
   };
+
+
+
 
   const deleteComment = async (comment_id: string) => {
     const confirmDelete = window.confirm("Apakah kamu yakin ingin menghapus komentar ini?");
@@ -290,37 +296,70 @@ const Post: React.FC = () => {
           <div>
             <strong>{comment["user.username"] || comment.username || "Unknown User"}</strong>
           </div>
-          <div>{comment.content}</div>
-          {comment.user_id === userId && (
+
+
+
+          
+       
+          {editingCommentId === comment.comment_id ? (
             <>
+              <textarea
+                rows={3}
+                style={{ width: "100%" }}
+                value={editedContent}
+                onChange={(e) => setEditedContent(e.target.value)}
+              />
               <button
                 onClick={() => {
-                  setUser_name(comment.username);
-                  setEditingCommentId(comment.comment_id);
-                  setEditedContent(comment.content);
+                  editComment(comment.comment_id);
                 }}
-                className="edit-button"
+                className="save-button"
                 style={{ marginRight: "0.5rem" }}
               >
-                Edit
+                Simpan
               </button>
               <button
-                onClick={() => deleteComment(comment.comment_id)}
-                className="delete-button"
-                style={{ marginRight: "0.5rem" }}
+                onClick={() => setEditingCommentId(null)}
+                className="cancel-button"
               >
-                Delete
+                Batal
               </button>
             </>
+          ) : (
+            <>
+              <div>{comment.content}</div>
+
+              {comment.user_id === userId && (
+                <>
+                  <button
+                    onClick={() => {
+                      setEditingCommentId(comment.comment_id);
+                      setEditedContent(comment.content);
+                    }}
+                    className="edit-button"
+                    style={{ marginRight: "0.5rem" }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => deleteComment(comment.comment_id)}
+                    className="delete-button"
+                    style={{ marginRight: "0.5rem" }}
+                  >
+                    Delete
+                  </button>
+                </>
+              )}
+              <button
+                onClick={() => setReplyingTo(comment)}
+                className="reply-button"
+              >
+                Reply
+              </button>
+              {/* Render replies recursively */}
+              {comment.replies && comment.replies.length > 0 && renderComments(comment.replies, level + 1)}
+            </>
           )}
-          <button
-            onClick={() => setReplyingTo(comment)}
-            className="reply-button"
-          >
-            Reply
-          </button>
-          {/* Render replies recursively */}
-          {comment.replies && comment.replies.length > 0 && renderComments(comment.replies, level + 1)}
         </li>
       ))}
     </ul>

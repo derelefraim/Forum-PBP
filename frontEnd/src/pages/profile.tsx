@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { fetchFromAPI } from "../../../backend/src/api/api.ts";
+
 import { useNavigate } from "react-router-dom";
 import "../styles/profile.css";
+import axios from "axios";
 
 
 interface UserProfile {
@@ -18,7 +19,13 @@ const ProfilePage: React.FC = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const data = await fetchFromAPI("/user/getCurrentUser", "GET");
+        const token = localStorage.getItem('token');
+        const response = await axios.get("http://localhost:3000/user/getCurrentUser", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = response.data;
         setProfile(data.user || data);
         console.log("Profile data:", data);
       } catch (err) {

@@ -17,7 +17,7 @@ const CreatePost: React.FC = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const data = await fetchFromAPI("/user/getUserById", "GET");
+        const data = await fetchFromAPI("/user/getCurrentUser", "GET");
         setUserId(data.user.user_id);
       } catch (err) {
         console.error("Error fetching profile:", err);

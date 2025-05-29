@@ -49,7 +49,7 @@ const EditProfilePage: React.FC = () => {
 
     try {
       await axios.put(
-        "/user/update",
+        "http://localhost:3000/user/update",
         {
           username,
           email,
