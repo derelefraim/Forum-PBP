@@ -16,7 +16,7 @@ const RegisterPage: React.FC = () => {
       setError("All fields are required.");
       return;
     }
-    // Simulasi register sukses
+    
 
     try {
       const response = await fetchFromAPI('/user/register', 'POST', { username, email, password });
