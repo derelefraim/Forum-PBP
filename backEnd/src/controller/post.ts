@@ -10,23 +10,23 @@ import { fn, col } from 'sequelize';
 
 // -- create post  image and category bagian createpost, bagian reivel
 export const createPost = async (req: any, res: any) => {
-    const { title, content } = req.body;
-    const user_id = req.body.user_id; 
+    const { title, content, category, user_id } = req.body;
+    const image_url = req.file ? req.file.filename : null;
 
     try {
         const post = await Post.create({
             title,
             content,
-            user_id: user_id,
+            user_id,
+            category,
+            image_url,
             createdAt: new Date(),
             updatedAt: new Date(),
         });
 
         res.status(201).json({ success: true, post });
-        return;
     } catch (error) {
         res.status(500).json({ message: "Terjadi kesalahan", error });
-        return;
     }
 }
 
